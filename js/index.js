@@ -92,7 +92,7 @@ window.THREE = THREE
 
 
 	layers.add( electricLayer )
-	layers.add( sensingLayer )
+	// layers.add( sensingLayer )
 	layers.add( processorLayer )
 
 
