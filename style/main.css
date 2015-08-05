@@ -1,0 +1,81 @@
+html, body{
+	margin: 0;
+	padding: 0;
+}
+
+
+* {
+  -webkit-user-select: none;
+}
+
+
+#info-toggle{
+	
+}
+
+.puck{
+	width: 74px;
+	height: 74px;
+	background-size: contain;
+	position: absolute;
+	left: 213px;
+	top: 710px;
+}
+
+
+.puck.collapsed{
+	background-image: url( ../img/expanded-puck.png );
+}
+
+
+.puck.expanded{
+	background-image: url( ../img/collapsed-puck.png );
+}
+
+.relative {
+  position: relative;
+}
+
+
+.container{
+	width: 100%;
+		height: 100%;
+	margin: 0 auto;
+}
+
+
+.mobile-phone{
+	position: absolute;
+	display: none;
+}
+
+
+.gl{
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+
+@media only screen and (min-device-width: 1300px){
+
+	.mobile-phone{
+		display: block;
+		position: absolute;
+	}
+
+	.container{
+		
+		width: 500px;
+	height: 800px;
+	}
+
+	.gl{
+		left: 49px;
+		position: absolute;
+		top: 102px;
+		width: 400px;
+		height: 714px
+	}
+}
