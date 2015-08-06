@@ -1,4 +1,4 @@
-import THREE from 'three'
+// import THREE from 'three'
 import math from './math'
 import projectToUV from './project-to-uv'
 import electricMaterial from './electric-material'
@@ -6,6 +6,9 @@ import hotspotMaterial from './hotspot-material'
 import sensingMaterial from './sensing-material'
 import events from './pointer-events'
 import facingMaterial from './mesh-facing-material'
+import text from './text'
+import createGeometry from 'three-bmfont-text'
+import Shader from './sdf'
 
 //window.THREE = THREE
 
@@ -76,6 +79,15 @@ import facingMaterial from './mesh-facing-material'
 	let layers = new THREE.Object3D()
 	let layerThickness = 1.0;
 
+	let dashedLine = new THREE.Line( 
+		new THREE.Geometry(), 
+		new THREE.LineDashedMaterial( { color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent:true } ),
+		THREE.LinePieces );
+
+	let l = 30
+	while ( l-- > 0 ) dashedLine.geometry.vertices.push( new THREE.Vector3( 0, 0, l ))
+
+
 
 	let hotspotLayer = new THREE.Mesh( 
 		new THREE.PlaneGeometry( width, height ),
@@ -100,10 +112,82 @@ import facingMaterial from './mesh-facing-material'
 		})))
 
 
+	// TEXT
+	
+	let textMesh = (text, material, font ) => {
+
+		let mesh = new THREE.Mesh(createGeometry({
+			text: text,
+		    font: font,
+		    align: 'left',
+    	}), material )
+    	mesh.font = font
+
+		mesh.rotation.x = Math.PI;
+    	// mesh.scale.set( 0.2, 0.2, 0.2 )
+
+    	mesh.position.x = -mesh.geometry.layout.width/2
+		//origin uses bottom left of last line
+		//so we need to move it down a fair bit 
+		mesh.position.y = mesh.geometry.layout.height * 1.035
+
+		//scale it down so it fits in our 3D units
+		var textAnchor = new THREE.Object3D()
+		textAnchor.scale.multiplyScalar(0.15)
+		textAnchor.add(mesh)
+		textAnchor.font = font
+
+    	return textAnchor
+
+	}
+
+
+	let processorText,
+		sensingText,
+		electricText,
+		locText
+
+	text( {font:'fonts/Lato-Regular-32.fnt', image:'fonts/lato.png'}, function( font, texture ){
+
+		var maxAni = renderer.getMaxAnisotropy()
+
+		//setup our texture with some nice mipmapping etc
+		texture.needsUpdate = true
+		texture.minFilter = THREE.LinearMipMapLinearFilter
+		texture.magFilter = THREE.LinearFilter
+		texture.generateMipmaps = true
+		texture.anisotropy = maxAni
+
+		
+    	let textMaterial = new THREE.ShaderMaterial(Shader({
+			map: texture,
+			smooth: 1/32, //the smooth value for SDF
+			side: THREE.DoubleSide,
+			transparent: true,
+			color: 'rgb(230, 230, 230)'
+		}))
+		
+
+		
+
+
+		processorLayer.add( processorText = textMesh( 'Processor', textMaterial, font ))
+		sensingLayer.add( sensingText = textMesh( 'Sensing layer', textMaterial, font ))
+		electricLayer.add( electricText = textMesh( 'Electric layer', textMaterial, font ))
+		sensingLayer.add( locText = textMesh( '(0, 0)', textMaterial, font ))
+
+		processorText.position.y = -47;
+		sensingText.position.y = -height * 0.7;
+		electricText.position.y = height * 0.5;
+		locText.position.z = layerThickness * 2;
+
+	})
+
 	layers.add( electricLayer )
 	layers.add( sensingLayer )
 	layers.add( processorLayer )
 	layers.add( hotspotLayer )
+	layers.add( dashedLine )
 
 
 // PROCESSOR
@@ -132,10 +216,10 @@ scene.add( layers )
 		// Properties and values in the expanded states
 		new Map([
 			[ camera.position, 			new THREE.Vector3( 0, 0, 200 )],
-			[ layers.rotation, 			new THREE.Euler( -.35, .5, .12 )],
+			[ layers.rotation, 			new THREE.Euler( -.3, .4, .12 )],
 			[ electricLayer.position, 	new THREE.Vector3( 0, 0, 30 )],
 			[ processorLayer.position, 	new THREE.Vector3( 0, 0, -40 )],
-			[ hotspotLayer.position, 	new THREE.Vector3( 0, 0, 2 )]
+			[ hotspotLayer.position, 	new THREE.Vector3( 0, 0, 1 )]
 		])
 	]
 
@@ -179,41 +263,64 @@ scene.add( layers )
 
 
 		
-		// Set Uniforms			
+		// Set opacity of processor			
 		processorLayer.material.materials[4].opacity = slideTo( 
 				processorLayer.material.materials[4].opacity,
 				expandedState )
 
+
+		// Set position of hotspots
 		electricLayer.material.materials[4].uniforms.uOrigin.value.fromArray( hotspotPos )
 		hotspotLayer.material.uniforms.uOrigin.value.fromArray( hotspotPos )
 
 
+		// Position dashed line
+		dashedLine.position.x = math.map( hotspotPos[0], 0, WIDTH, -width*0.5, width*0.5 )
+		dashedLine.position.y = math.map( hotspotPos[1], 0, HEIGHT, -height * 0.5, height * 0.5 )
+
+		if( locText ) {
+			locText.position.x = dashedLine.position.x
+			locText.position.y = dashedLine.position.y
+			locText.children[0].geometry.update({
+				text: '('+parseFloat(Math.round(dashedLine.position.x * 100) / 100).toFixed(1)+', '+parseFloat(Math.round(dashedLine.position.y * 100) / 100).toFixed(1)+')',
+			    font: locText.font,
+			    align: 'left',
+			})
+
+			locText.visible = expandedState === 1 && interactionState === 1? true : false
+
+		}
+
+
+		// set radius of electric layer
 		electricLayer.material.materials[4].uniforms.uRadius.value = slideTo( 
 				electricLayer.material.materials[4].uniforms.uRadius.value,
 				interactionState * EXPANDED_HOTSPOT_SIZE )
 
+		// set radius of sensing layer
 		let radius = electricLayer.material.materials[4].uniforms.uRadius.value
-		hotspotLayer.material.uniforms.uRadius.value = math.mix( expandedState, radius, radius * 0.3 );
+		hotspotLayer.material.uniforms.uRadius.value = math.mix( expandedState, radius, radius * 0.4 );
 			
 
-
+		// set opacity of electric layer
 		electricLayer.material.materials[4].uniforms.uOpacity.value = slideTo( 
 				electricLayer.material.materials[4].uniforms.uOpacity.value,
 				math.mix( expandedState, 1.0, 0.5 ))
 
 
+		// set opacity of sensing layer
 		sensingLayer.material.materials[4].uniforms.uOpacity.value = slideTo( 
 				sensingLayer.material.materials[4].uniforms.uOpacity.value,
 				math.mix( expandedState, 1.0, 0.5 ))
 
 
+		dashedLine.material.visible = interactionState === 1 && expandedState === 1 ? true : false;
 
 	}
 
 // RENDER
 
 	function render(){
-
 		update()
 		renderer.render( scene, camera )
 		requestAnimationFrame( render )	
@@ -227,6 +334,16 @@ scene.add( layers )
 
 	// Prevents default OS page scroll events
 	document.body.addEventListener('touchmove', (e) => e.preventDefault() , false); 
+
+
+	document.addEventListener('mousemove', (e) => {
+
+		if( interactionState === 0 ){
+
+
+		}
+
+	}, false); 
 
 
 

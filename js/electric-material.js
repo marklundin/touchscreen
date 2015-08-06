@@ -1,4 +1,4 @@
-import THREE from 'three'
+// import THREE from 'three'
 import facingMaterial from './mesh-facing-material'
 
 export default ( resolution ) => {
@@ -37,18 +37,6 @@ export default ( resolution ) => {
 				}
 
 
-				// float aastep( float threshold, float distance ){
-				// 	#ifdef GL_OES_standard_derivatives
-				// 	    float d  = (distance - 0.5); // distance rebias 0..1 --> -0.5 .. +0.5
-				// 	    float aa = 0.75*length( vec2( dFdx( d ), dFdy( d ))); // anti-alias
-				// 	    return smoothstep( -aa, aa, d );
-				// 	#else
-				// 	    const float w = 0.25; // fallback to smoothstep( 0.25, 0.75, distance ) if texture gradients not available
-				// 	    return smoothstep( threshold-w, threshold+w, distance ); 
-				// 	#endif
-				// }
-
-
 				float line( vec2 p, float thickness ){
 					return aastep( thickness, abs( p.y ));
 				}
@@ -71,6 +59,7 @@ export default ( resolution ) => {
 					return 1.0 - pow( smoothstep( .0, radius, length( delta )), power );
 				}
 
+
 				void main(){
 
 
@@ -81,7 +70,7 @@ export default ( resolution ) => {
 
 
 					// DEFINE LINE STYLES
-					float lineThickness = 2.0;
+					float lineThickness = 1.;
 					float lineSpacing = 30.0;
 					vec3 lineColor = vec3( 0.1, 0.9, 1.0 );
 					vec3 focusColor = vec3( 1.0, 0.0, 1.0 );
@@ -102,8 +91,8 @@ export default ( resolution ) => {
 
 
 					col.rgb = mix( lineColor, focusColor, distortionFactor );
-					// col.rgb = mix( col.rgb, vec3( 1.0 ), value );
-					col.a = 1.0 - value;//1.0;//1.0 - value + uOpacity;
+					col.rgb = mix( col.rgb, vec3( 1.0 ), value );
+					col.a = 1.0 - ( value * uOpacity );//1.0;//1.0 - value + uOpacity;
 
 					
 

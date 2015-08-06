@@ -1,4 +1,4 @@
-import THREE from 'three'
+// import THREE from 'three'
 
 let edgeMaterial = new THREE.MeshBasicMaterial({color:0xFFFFFF})
 

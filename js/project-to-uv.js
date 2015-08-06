@@ -4,7 +4,7 @@
 	projected into the scene
 */
 
-import THREE from 'three'
+// import THREE from 'three'
 
 var vector = new THREE.Vector3();
 var raycaster = new THREE.Raycaster();

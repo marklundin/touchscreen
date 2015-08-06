@@ -1,4 +1,4 @@
-import THREE from 'three'
+// import THREE from 'three'
 import facingMaterial from './mesh-facing-material'
 
 export default ( resolution ) => {

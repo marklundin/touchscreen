@@ -1,4 +1,4 @@
-import THREE from 'three'
+// import THREE from 'three'
 import facingMaterial from './mesh-facing-material'
 
 export default ( resolution ) => {
@@ -58,7 +58,7 @@ export default ( resolution ) => {
 
 
 					// DEFINE LINE STYLES
-					float lineThickness = 1.5;
+					float lineThickness = 1.;
 					float lineSpacing = 30.0;
 					vec3 lineColor = vec3( 1, 0.9, 0.3 );
 					// vec3 focusColor = vec3( 1.0, 0.0, 1.0 );
