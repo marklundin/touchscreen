@@ -27,7 +27,8 @@ exports['default'] = function (resolution) {
 
 		},
 
-		fragmentShader: '\n\n\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\t#extension GL_OES_standard_derivatives : enable\n\t\t\t\t#endif\n\n\t\t\t\tvarying vec2 vUv;\n\n\t\t\t\tuniform vec2 uResolution;\n\t\t\t\tuniform vec2 uOrigin;\n\t\t\t\tuniform float uOpacity;\n\t\t\t\tuniform float uRadius;\n\n\t\t\t\tfloat aastep(float threshold, float value) {\n\t\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\t\tfloat afwidth = length(vec2(dFdx(value), dFdy(value))) * 0.70710678118654757;\n\t\t\t\t\t\treturn smoothstep(threshold-afwidth, threshold+afwidth, value);\n\t\t\t\t\t#else\n\t\t\t\t\t\treturn step(threshold, value);\n\t\t\t\t\t#endif  \n\t\t\t\t}\n\n\n\t\t\t\tfloat line( vec2 p, float thickness ){\n\t\t\t\t\treturn aastep( thickness, abs( p.y ));\n\t\t\t\t}\n\n\n\t\t\t\tfloat circle( vec2 p, float radius ){\n\t\t\t\t\treturn aastep( radius, length( p ));\n\t\t\t\t}\n\n\n\t\t\t\tfloat lines( vec2 p, vec2 c, float thickness ){\n\t\t\t\t\tvec2 q = mod( p, c ) - 0.5 * c;\n\t\t\t\t\treturn line( q, thickness );\n\t\t\t\t}\n\n\n\t\t\t\tfloat pinch( vec2 p, vec2 o, float radius, float power, float verticalShape ){\n\t\t\t\t\tvec2 delta = p - o;\n\t\t\t\t\tdelta.y *= verticalShape;\n\t\t\t\t\treturn 1.0 - pow( smoothstep( .0, radius, length( delta )), power );\n\t\t\t\t}\n\n\t\t\t\tvoid main(){\n\n\n\t\t\t\t\t// COORDS\n\t\t\t\t\tvec2 p = vUv * uResolution;\n\t\t\t\t\tvec4 col = vec4(0.0);\n\n\n\n\t\t\t\t\t// DEFINE LINE STYLES\n\t\t\t\t\tfloat lineThickness = 1.;\n\t\t\t\t\tfloat lineSpacing = 30.0;\n\t\t\t\t\tvec3 lineColor = vec3( 0.1, 0.9, 1.0 );\n\t\t\t\t\tvec3 focusColor = vec3( 1.0, 0.0, 1.0 );\n\n\n\n\t\t\t\t\t// DISTORT COORDINATES AT HOTSPOT\n\t\t\t\t\tfloat distortionFactor = pinch( p, uOrigin, uRadius * 1.5, 1.2, 0.5 );\n\t\t\t\t\tvec2 distortion = ( p - uOrigin ) * distortionFactor * 0.9;\n\n\n\n\t\t\t\t\t// CALCULATE LINES\t\t\t\t\n\t\t\t\t\tfloat value = lines( p + distortion , vec2( 0.0, lineSpacing ), lineThickness );\n\n\n\n\n\t\t\t\t\tcol.rgb = mix( lineColor, focusColor, distortionFactor );\n\t\t\t\t\tcol.rgb = mix( col.rgb, vec3( 1.0 ), value );\n\t\t\t\t\tcol.a = uOpacity;\n\n\t\t\t\t\t\n\n\t\t\t\t\tgl_FragColor = col;\n\n\t\t\t\t}\n\n\t\t\t',
+		fragmentShader: '\n\n\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\t#extension GL_OES_standard_derivatives : enable\n\t\t\t\t#endif\n\n\t\t\t\tvarying vec2 vUv;\n\n\t\t\t\tuniform vec2 uResolution;\n\t\t\t\tuniform vec2 uOrigin;\n\t\t\t\tuniform float uOpacity;\n\t\t\t\tuniform float uRadius;\n\n\t\t\t\tfloat aastep(float threshold, float value) {\n\t\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\t\tfloat afwidth = length(vec2(dFdx(value), dFdy(value))) * 0.70710678118654757;\n\t\t\t\t\t\treturn smoothstep(threshold-afwidth, threshold+afwidth, value);\n\t\t\t\t\t#else\n\t\t\t\t\t\treturn step(threshold, value);\n\t\t\t\t\t#endif  \n\t\t\t\t}\n\n\n\t\t\t\t// float aastep( float threshold, float distance ){\n\t\t\t\t// \t#ifdef GL_OES_standard_derivatives\n\t\t\t\t// \t    float d  = (distance - 0.5); // distance rebias 0..1 --> -0.5 .. +0.5\n\t\t\t\t// \t    float aa = 0.75*length( vec2( dFdx( d ), dFdy( d ))); // anti-alias\n\t\t\t\t// \t    return smoothstep( -aa, aa, d );\n\t\t\t\t// \t#else\n\t\t\t\t// \t    const float w = 0.25; // fallback to smoothstep( 0.25, 0.75, distance ) if texture gradients not available\n\t\t\t\t// \t    return smoothstep( threshold-w, threshold+w, distance ); \n\t\t\t\t// \t#endif\n\t\t\t\t// }\n\n\n\t\t\t\tfloat line( vec2 p, float thickness ){\n\t\t\t\t\treturn aastep( thickness, abs( p.y ));\n\t\t\t\t}\n\n\n\t\t\t\tfloat circle( vec2 p, float radius ){\n\t\t\t\t\treturn aastep( radius, length( p ));\n\t\t\t\t}\n\n\n\t\t\t\tfloat lines( vec2 p, vec2 c, float thickness ){\n\t\t\t\t\tvec2 q = mod( p, c ) - 0.5 * c;\n\t\t\t\t\treturn line( q, thickness );\n\t\t\t\t}\n\n\n\t\t\t\tfloat pinch( vec2 p, vec2 o, float radius, float power, float verticalShape ){\n\t\t\t\t\tvec2 delta = p - o;\n\t\t\t\t\tdelta.y *= verticalShape;\n\t\t\t\t\treturn 1.0 - pow( smoothstep( .0, radius, length( delta )), power );\n\t\t\t\t}\n\n\t\t\t\tvoid main(){\n\n\n\t\t\t\t\t// COORDS\n\t\t\t\t\tvec2 p = vUv * uResolution;\n\t\t\t\t\tvec4 col = vec4(0.0);\n\n\n\n\t\t\t\t\t// DEFINE LINE STYLES\n\t\t\t\t\tfloat lineThickness = 2.0;\n\t\t\t\t\tfloat lineSpacing = 30.0;\n\t\t\t\t\tvec3 lineColor = vec3( 0.1, 0.9, 1.0 );\n\t\t\t\t\tvec3 focusColor = vec3( 1.0, 0.0, 1.0 );\n\n\n\n\t\t\t\t\t// DISTORT COORDINATES AT HOTSPOT\n\t\t\t\t\tfloat distortionFactor = pinch( p, uOrigin, uRadius * 1.8, 1.2, 0.5 );\n\t\t\t\t\tvec2 distortion = ( p - uOrigin ) * distortionFactor * 0.9;\n\n\n\n\t\t\t\t\t// CALCULATE LINES\t\t\t\t\n\t\t\t\t\tfloat value = lines( p + distortion, vec2( 0.0, lineSpacing ), lineThickness );\n\n\n\n\n\n\t\t\t\t\tcol.rgb = mix( lineColor, focusColor, distortionFactor );\n\t\t\t\t\t// col.rgb = mix( col.rgb, vec3( 1.0 ), value );\n\t\t\t\t\tcol.a = 1.0 - value;//1.0;//1.0 - value + uOpacity;\n\n\t\t\t\t\t\n\n\t\t\t\t\tgl_FragColor = col;\n\n\t\t\t\t}\n\n\t\t\t',
+		// blending: THREE.MultiplyBlending,
 		transparent: true,
 		vertexShader: defaultVertexShader
 	}));
@@ -37,7 +38,46 @@ exports['default'] = function (resolution) {
 var defaultVertexShader = '\n\tvarying vec2 vUv;\n\tvoid main() {\n\t\tvUv = uv;\n\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n\t}\n';
 module.exports = exports['default'];
 
-},{"./mesh-facing-material":4,"three":7}],2:[function(require,module,exports){
+},{"./mesh-facing-material":5,"three":9}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _three = require('three');
+
+var _three2 = _interopRequireDefault(_three);
+
+var _meshFacingMaterial = require('./mesh-facing-material');
+
+var _meshFacingMaterial2 = _interopRequireDefault(_meshFacingMaterial);
+
+exports['default'] = function (resolution) {
+	return new _three2['default'].ShaderMaterial({
+
+		uniforms: {
+
+			uResolution: { type: "v2", value: resolution },
+			uOrigin: { type: "v2", value: new _three2['default'].Vector2(resolution.x * 0.5, resolution.y * 0.5) },
+			uRadius: { type: "f", value: 0 }
+
+		},
+
+		fragmentShader: '\n\n\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t#extension GL_OES_standard_derivatives : enable\n\t\t\t#endif\n\n\t\t\tvarying vec2 vUv;\n\n\t\t\tuniform vec2 uResolution;\n\t\t\tuniform vec2 uOrigin;\n\t\t\tuniform float uRadius;\n\t\t\t\n\n\n\t\t\tfloat aastep(float threshold, float value) {\n\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\tfloat afwidth = length(vec2(dFdx(value), dFdy(value))) * 0.70710678118654757;\n\t\t\t\t\treturn smoothstep(threshold-afwidth, threshold+afwidth, value);\n\t\t\t\t#else\n\t\t\t\t\treturn step(threshold, value);\n\t\t\t\t#endif  \n\t\t\t}\n\n\n\t\t\tfloat circle( vec2 p, float radius ){\n\t\t\t\treturn aastep( radius, length( p ));\n\t\t\t}\n\n\n\n\t\t\tvoid main(){\n\n\n\t\t\t\t// COORDS\n\t\t\t\tvec2 p = vUv * uResolution;\n\t\t\t\tvec4 col = vec4( 0.9, 0.22, 0.64, 1.0 );\n\n\n\t\t\t\t// CIRCLE SDF\n\t\t\t\tfloat value = circle( abs( p - uOrigin ), uRadius );\n\n\t\t\t\t// col.rgb = mix( lineColor, focusColor, distortionFactor );\n\t\t\t\t// col.rgb = col;\n\t\t\t\tcol.a = 1.0 - value;\n\t\t\t\t\n\n\t\t\t\tgl_FragColor = col;\n\n\t\t\t}\n\n\t\t',
+		// blending: THREE.MultiplyBlending,
+		transparent: true,
+		vertexShader: defaultVertexShader
+	});
+};
+
+// Standard vertex shader
+var defaultVertexShader = '\n\tvarying vec2 vUv;\n\tvoid main() {\n\t\tvUv = uv;\n\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n\t}\n';
+module.exports = exports['default'];
+
+},{"./mesh-facing-material":5,"three":9}],3:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -50,13 +90,21 @@ var _math = require('./math');
 
 var _math2 = _interopRequireDefault(_math);
 
-var _projector = require('./projector');
+var _projectToUv = require('./project-to-uv');
 
-var _projector2 = _interopRequireDefault(_projector);
+var _projectToUv2 = _interopRequireDefault(_projectToUv);
 
 var _electricMaterial = require('./electric-material');
 
 var _electricMaterial2 = _interopRequireDefault(_electricMaterial);
+
+var _hotspotMaterial = require('./hotspot-material');
+
+var _hotspotMaterial2 = _interopRequireDefault(_hotspotMaterial);
+
+var _sensingMaterial = require('./sensing-material');
+
+var _sensingMaterial2 = _interopRequireDefault(_sensingMaterial);
 
 var _pointerEvents = require('./pointer-events');
 
@@ -64,15 +112,16 @@ var _pointerEvents2 = _interopRequireDefault(_pointerEvents);
 
 var _meshFacingMaterial = require('./mesh-facing-material');
 
-var _meshFacingMaterial2 = _interopRequireDefault(_meshFacingMaterial);
-
-window.THREE = _three2['default'];
+//window.THREE = THREE
 
 // INITIALISE
 
 // Constants
+
+var _meshFacingMaterial2 = _interopRequireDefault(_meshFacingMaterial);
+
 var container = document.querySelector('.gl'),
-    EXPANDED_HOTSPOT_SIZE = 80,
+    EXPANDED_HOTSPOT_SIZE = 50,
     WIDTH = container.getBoundingClientRect().width,
     HEIGHT = container.getBoundingClientRect().height;
 
@@ -85,9 +134,8 @@ var expandedState = 0,
 
 var canvas = document.createElement('canvas'),
     renderer = new _three2['default'].WebGLRenderer({ canvas: canvas, alpha: true, antialias: true, premultipliedAlpha: true }),
-    camera = new _three2['default'].PerspectiveCamera(45, WIDTH / HEIGHT),
-    scene = new _three2['default'].Scene(),
-    project = (0, _projector2['default'])(camera);
+    camera = new _three2['default'].PerspectiveCamera(35, WIDTH / HEIGHT),
+    scene = new _three2['default'].Scene();
 
 container.appendChild(canvas);
 renderer.setSize(WIDTH, HEIGHT);
@@ -110,22 +158,28 @@ camera.position.z = 100;
 var height = 2 * Math.tan(camera.fov * Math.PI / 360) * camera.position.z,
     width = height * camera.aspect;
 
+console.log(width, height);
+
 // LAYERS
 
 var layers = new _three2['default'].Object3D();
 var layerThickness = 1.0;
 
+var hotspotLayer = new _three2['default'].Mesh(new _three2['default'].PlaneGeometry(width, height), (0, _hotspotMaterial2['default'])(new _three2['default'].Vector2(WIDTH, HEIGHT)));
+
 var electricLayer = new _three2['default'].Mesh(new _three2['default'].BoxGeometry(width, height, layerThickness), (0, _electricMaterial2['default'])(new _three2['default'].Vector2(WIDTH, HEIGHT)));
 
-var sensingLayer = new _three2['default'].Mesh(new _three2['default'].BoxGeometry(width, height, layerThickness), (0, _electricMaterial2['default'])(new _three2['default'].Vector2(WIDTH, HEIGHT)));
+var sensingLayer = new _three2['default'].Mesh(new _three2['default'].BoxGeometry(width, height, layerThickness), (0, _sensingMaterial2['default'])(new _three2['default'].Vector2(WIDTH, HEIGHT)));
 
 var processorLayer = new _three2['default'].Mesh(new _three2['default'].BoxGeometry(width * 0.5, width * 0.5, layerThickness), (0, _meshFacingMaterial2['default'])(new _three2['default'].MeshBasicMaterial({
+	transparent: true,
 	map: _three2['default'].ImageUtils.loadTexture('img/processor.jpg')
 })));
 
 layers.add(electricLayer);
-// layers.add( sensingLayer )
+layers.add(sensingLayer);
 layers.add(processorLayer);
+layers.add(hotspotLayer);
 
 // PROCESSOR
 
@@ -139,16 +193,16 @@ scene.add(layers);
 var expandedAnimation = [
 
 // Properties and values in the collapsed states
-new Map([[camera.position, new _three2['default'].Vector3(0, 0, 100)], [layers.rotation, new _three2['default'].Euler(0, 0, 0)], [electricLayer.position, new _three2['default'].Vector3(0, 0, 0)], [processorLayer.position, new _three2['default'].Vector3(0, 0, -1)]]),
+new Map([[camera.position, new _three2['default'].Vector3(0, 0, 100)], [layers.rotation, new _three2['default'].Euler(0, 0, 0)], [electricLayer.position, new _three2['default'].Vector3(0, 0, 1)], [processorLayer.position, new _three2['default'].Vector3(0, 0, -10)], [hotspotLayer.position, new _three2['default'].Vector3(0, 0, 2)]]),
 
 // Properties and values in the expanded states
-new Map([[camera.position, new _three2['default'].Vector3(0, 0, 200)], [layers.rotation, new _three2['default'].Euler(-.3, .8, 0)], [electricLayer.position, new _three2['default'].Vector3(0, 0, 30)], [processorLayer.position, new _three2['default'].Vector3(0, 0, -30)]])];
+new Map([[camera.position, new _three2['default'].Vector3(0, 0, 200)], [layers.rotation, new _three2['default'].Euler(-.35, .5, .12)], [electricLayer.position, new _three2['default'].Vector3(0, 0, 30)], [processorLayer.position, new _three2['default'].Vector3(0, 0, -40)], [hotspotLayer.position, new _three2['default'].Vector3(0, 0, 2)]])];
 
 // TRANSITION
 
 // Performs a naive transition, sliding 'a' towards 'b'
 var slideTo = function slideTo(a, b) {
-	return (b - a) * 0.08 + a;
+	return (b - a) * 0.12 + a;
 };
 
 var slideToVec3 = function slideToVec3(b, a) {
@@ -180,13 +234,19 @@ var update = function update() {
 	expandedAnimation[expandedState].forEach(transition);
 
 	// Set Uniforms			
+	processorLayer.material.materials[4].opacity = slideTo(processorLayer.material.materials[4].opacity, expandedState);
+
 	electricLayer.material.materials[4].uniforms.uOrigin.value.fromArray(hotspotPos);
+	hotspotLayer.material.uniforms.uOrigin.value.fromArray(hotspotPos);
 
 	electricLayer.material.materials[4].uniforms.uRadius.value = slideTo(electricLayer.material.materials[4].uniforms.uRadius.value, interactionState * EXPANDED_HOTSPOT_SIZE);
 
+	var radius = electricLayer.material.materials[4].uniforms.uRadius.value;
+	hotspotLayer.material.uniforms.uRadius.value = _math2['default'].mix(expandedState, radius, radius * 0.3);
+
 	electricLayer.material.materials[4].uniforms.uOpacity.value = slideTo(electricLayer.material.materials[4].uniforms.uOpacity.value, _math2['default'].mix(expandedState, 1.0, 0.5));
 
-	sensingLayer.material.opacity = electricLayer.material.materials[4].uniforms.uOpacity.value;
+	sensingLayer.material.materials[4].uniforms.uOpacity.value = slideTo(sensingLayer.material.materials[4].uniforms.uOpacity.value, _math2['default'].mix(expandedState, 1.0, 0.5));
 };
 
 // RENDER
@@ -212,12 +272,12 @@ var updateHotSpotPosition = function updateHotSpotPosition(evt) {
 	var bounds = canvas.getBoundingClientRect();
 
 	var x = evt.clientX - bounds.left,
-	    y = bounds.height - (evt.clientY - bounds.top);
+	    y = evt.clientY - bounds.top;
 
-	x = _math2['default'].clamp(x, 0, bounds.width);
-	y = _math2['default'].clamp(y, 0, bounds.height);
+	var screenCoord = [x / bounds.width * 2 - 1, -(y / bounds.height) * 2 + 1];
+	var p = (0, _projectToUv2['default'])(camera, screenCoord, electricLayer);
 
-	hotspotPos = [x, y];
+	hotspotPos = [_math2['default'].map(p.x, -width * 0.5, width * 0.5, 0, WIDTH), _math2['default'].map(p.y, -height * 0.5, height * 0.5, 0, HEIGHT)];
 };
 
 var onInteractionUpdate = updateHotSpotPosition;
@@ -239,8 +299,12 @@ var onInteractionEnd = function onInteractionEnd() {
 
 document.addEventListener('pointerdown', onInteractionStart);
 
-},{"./electric-material":1,"./math":3,"./mesh-facing-material":4,"./pointer-events":5,"./projector":6,"three":7}],3:[function(require,module,exports){
+},{"./electric-material":1,"./hotspot-material":2,"./math":4,"./mesh-facing-material":5,"./pointer-events":6,"./project-to-uv":7,"./sensing-material":8,"three":9}],4:[function(require,module,exports){
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var PI2 = 2.0 * Math.PI,
     HALF_PI = Math.PI * 0.5,
@@ -248,7 +312,7 @@ var PI2 = 2.0 * Math.PI,
     RAD2DEG = 180.0 / Math.PI,
     EPS = 10e-6;
 
-var math = module.exports = {
+var math = {
 
     //Constants
     PI2: PI2,
@@ -311,7 +375,10 @@ var math = module.exports = {
 
 };
 
-},{}],4:[function(require,module,exports){
+exports["default"] = math;
+module.exports = exports["default"];
+
+},{}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -332,7 +399,7 @@ exports['default'] = function (facingMaterial) {
 
 module.exports = exports['default'];
 
-},{"three":7}],5:[function(require,module,exports){
+},{"three":9}],6:[function(require,module,exports){
 /*!
  * PEP v0.3.0 | https://github.com/jquery/PEP
  * Copyright jQuery Foundation and other contributors | http://jquery.org/license
@@ -1546,9 +1613,9 @@ module.exports = exports['default'];
   return pointerevents;
 });
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*
-	Returns a 3d point at the intersection 
+	Returns a 2d uv coord at the intersection 
 	of a plane and a 2d screen coordinate 
 	projected into the scene
 */
@@ -1565,31 +1632,71 @@ var _three = require('three');
 
 var _three2 = _interopRequireDefault(_three);
 
-var ray = new _three2['default'].Vector3();
+var vector = new _three2['default'].Vector3();
+var raycaster = new _three2['default'].Raycaster();
+var plane = new _three2['default'].Plane();
+var facing = new _three2['default'].Vector3(0, 0, -1);
+var matObjWorldInv = new _three2['default'].Matrix4();
+var intersection = new _three2['default'].Vector3();
+var coplanarPoint = new _three2['default'].Vector3(10, 10, 1);
 
-exports['default'] = function (camera) {
+exports['default'] = function (camera, screenCoord, object) {
+	facing.set(0, 0, -1).transformDirection(object.matrixWorld);
+	coplanarPoint.set(10, 10, 1).applyMatrix4(object.matrixWorld);
 
-	return function (point, plane) {
+	plane.setFromNormalAndCoplanarPoint(facing, coplanarPoint);
+	vector.set(screenCoord[0], screenCoord[1], 0.5);
+	vector.unproject(camera);
+	raycaster.set(camera.position, vector.sub(camera.position).normalize());
 
-		// ray.direction.set( 0, 0,)
-		ray.set(point[0], point[1], 0.5).unproject(camera);
-		// .subSelf( camera.position )
-		// .normalize()
-
-		console.log(ray);
-
-		// // var vector = new THREE.Vector3();
-		// // var projector = new THREE.Projector();
-		// projector.projectVector( vector.setFromMatrixPosition( object.matrixWorld ), camera );
-
-		// vector.x = ( vector.x * widthHalf ) + widthHalf;
-		// vector.y = - ( vector.y * heightHalf ) + heightHalf;
-	};
+	raycaster.ray.intersectPlane(plane, intersection);
+	matObjWorldInv.getInverse(object.matrixWorld);
+	return intersection.applyMatrix4(matObjWorldInv);
 };
 
 module.exports = exports['default'];
 
-},{"three":7}],7:[function(require,module,exports){
+},{"three":9}],8:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _three = require('three');
+
+var _three2 = _interopRequireDefault(_three);
+
+var _meshFacingMaterial = require('./mesh-facing-material');
+
+var _meshFacingMaterial2 = _interopRequireDefault(_meshFacingMaterial);
+
+exports['default'] = function (resolution) {
+	return (0, _meshFacingMaterial2['default'])(new _three2['default'].ShaderMaterial({
+
+		uniforms: {
+
+			uResolution: { type: "v2", value: resolution },
+			// uOrigin: { type: "v2", value: new THREE.Vector2( resolution.x*0.5, resolution.y*0.5) },
+			// uRadius: { type: "f", value: 0 },
+			uOpacity: { type: "f", value: 1.0 }
+
+		},
+
+		fragmentShader: '\n\n\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\t#extension GL_OES_standard_derivatives : enable\n\t\t\t\t#endif\n\n\t\t\t\tvarying vec2 vUv;\n\n\t\t\t\tuniform vec2 uResolution;\n\t\t\t\t// uniform vec2 uOrigin;\n\t\t\t\tuniform float uOpacity;\n\t\t\t\t// uniform float uRadius;\n\n\t\t\t\tfloat aastep(float threshold, float value) {\n\t\t\t\t\t#ifdef GL_OES_standard_derivatives\n\t\t\t\t\t\tfloat afwidth = length(vec2(dFdx(value), dFdy(value))) * 0.70710678118654757;\n\t\t\t\t\t\treturn smoothstep(threshold-afwidth, threshold+afwidth, value);\n\t\t\t\t\t#else\n\t\t\t\t\t\treturn step(threshold, value);\n\t\t\t\t\t#endif  \n\t\t\t\t}\n\n\n\t\t\t\tfloat line( vec2 p, float thickness ){\n\t\t\t\t\treturn aastep( thickness, abs( p.x ));\n\t\t\t\t}\n\n\n\t\t\t\tfloat lines( vec2 p, vec2 c, float thickness ){\n\t\t\t\t\tvec2 q = mod( p, c ) - 0.5 * c;\n\t\t\t\t\treturn line( q, thickness );\n\t\t\t\t}\n\n\n\t\t\t\tvoid main(){\n\n\n\t\t\t\t\t// COORDS\n\t\t\t\t\tvec2 p = vUv * uResolution;\n\t\t\t\t\tvec4 col = vec4(0.0);\n\n\n\n\t\t\t\t\t// DEFINE LINE STYLES\n\t\t\t\t\tfloat lineThickness = 1.5;\n\t\t\t\t\tfloat lineSpacing = 30.0;\n\t\t\t\t\tvec3 lineColor = vec3( 1, 0.9, 0.3 );\n\t\t\t\t\t// vec3 focusColor = vec3( 1.0, 0.0, 1.0 );\n\n\n\n\t\t\t\t\t// // DISTORT COORDINATES AT HOTSPOT\n\t\t\t\t\t// float distortionFactor = pinch( p, uOrigin, uRadius * 1.5, 1.2, 0.5 );\n\t\t\t\t\t// vec2 distortion = ( p - uOrigin ) * distortionFactor * 0.9;\n\n\n\n\t\t\t\t\t// CALCULATE LINES\t\t\t\t\n\t\t\t\t\tfloat value = lines( p, vec2( lineSpacing, 0.0 ), lineThickness );\n\n\n\n\n\t\t\t\t\t// col.rgb = mix( lineColor, focusColor, distortionFactor );\n\t\t\t\t\tcol.rgb = mix( lineColor, vec3( 1.0 ), value );\n\t\t\t\t\tcol.a = uOpacity;\n\n\t\t\t\t\t\n\n\t\t\t\t\tgl_FragColor = col;\n\n\t\t\t\t}\n\n\t\t\t',
+		// blending: THREE.MultiplyBlending,
+		transparent: true,
+		vertexShader: defaultVertexShader
+	}));
+};
+
+// Standard vertex shader
+var defaultVertexShader = '\n\tvarying vec2 vUv;\n\tvoid main() {\n\t\tvUv = uv;\n\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n\t}\n';
+module.exports = exports['default'];
+
+},{"./mesh-facing-material":5,"three":9}],9:[function(require,module,exports){
 var self = self || {};// File:src/Three.js
 
 /**
@@ -36737,4 +36844,4 @@ if (typeof exports !== 'undefined') {
   this['THREE'] = THREE;
 }
 
-},{}]},{},[2]);
+},{}]},{},[3]);
