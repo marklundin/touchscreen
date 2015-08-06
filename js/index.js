@@ -1,19 +1,21 @@
 import THREE from 'three'
 import math from './math'
-import createProjector from './projector'
+import projectToUV from './project-to-uv'
 import electricMaterial from './electric-material'
+import hotspotMaterial from './hotspot-material'
+import sensingMaterial from './sensing-material'
 import events from './pointer-events'
 import facingMaterial from './mesh-facing-material'
 
+//window.THREE = THREE
 
-window.THREE = THREE
 
 // INITIALISE
 
 
 	// Constants
 	let container = document.querySelector( '.gl' ),
-		EXPANDED_HOTSPOT_SIZE = 80,
+		EXPANDED_HOTSPOT_SIZE = 50,
 		WIDTH = container.getBoundingClientRect().width,
 		HEIGHT = container.getBoundingClientRect().height
 
@@ -31,9 +33,8 @@ window.THREE = THREE
 
 	let canvas = document.createElement('canvas'), 
 		renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias: true, premultipliedAlpha:true}),
-		camera = new THREE.PerspectiveCamera( 45, WIDTH / HEIGHT),
-		scene = new THREE.Scene(),
-		project = createProjector( camera )
+		camera = new THREE.PerspectiveCamera( 35, WIDTH / HEIGHT),
+		scene = new THREE.Scene()
 
 
 	container.appendChild( canvas )
@@ -67,11 +68,18 @@ window.THREE = THREE
 		width  = height * camera.aspect
 
 
+	console.log( width, height );
+
 
 // LAYERS
 
 	let layers = new THREE.Object3D()
 	let layerThickness = 1.0;
+
+
+	let hotspotLayer = new THREE.Mesh( 
+		new THREE.PlaneGeometry( width, height ),
+		hotspotMaterial( new THREE.Vector2( WIDTH, HEIGHT )))
 
 	
 	let electricLayer = new THREE.Mesh( 
@@ -81,19 +89,21 @@ window.THREE = THREE
 
 	let sensingLayer = new THREE.Mesh( 
 		new THREE.BoxGeometry( width, height, layerThickness ),
-		electricMaterial( new THREE.Vector2( WIDTH, HEIGHT )))
+		sensingMaterial( new THREE.Vector2( WIDTH, HEIGHT )))
 
 
 	let processorLayer = new THREE.Mesh( 
 		new THREE.BoxGeometry( width * 0.5, width * 0.5, layerThickness ),
 		facingMaterial( new THREE.MeshBasicMaterial({
+			transparent: true,
 			map: THREE.ImageUtils.loadTexture('img/processor.jpg')
 		})))
 
 
 	layers.add( electricLayer )
-	// layers.add( sensingLayer )
+	layers.add( sensingLayer )
 	layers.add( processorLayer )
+	layers.add( hotspotLayer )
 
 
 // PROCESSOR
@@ -114,16 +124,18 @@ scene.add( layers )
 		new Map([
 			[ camera.position, 			new THREE.Vector3( 0, 0, 100 )],
 			[ layers.rotation, 			new THREE.Euler( 0, 0, 0 )],
-			[ electricLayer.position, 	new THREE.Vector3( 0, 0, 0 )],
-			[ processorLayer.position, 	new THREE.Vector3( 0, 0, -1 )]
+			[ electricLayer.position, 	new THREE.Vector3( 0, 0, 1 )],
+			[ processorLayer.position, 	new THREE.Vector3( 0, 0, -10 )],
+			[ hotspotLayer.position, 	new THREE.Vector3( 0, 0, 2 )]
 		]),
 
 		// Properties and values in the expanded states
 		new Map([
 			[ camera.position, 			new THREE.Vector3( 0, 0, 200 )],
-			[ layers.rotation, 			new THREE.Euler( -.3, .8, 0 )],
+			[ layers.rotation, 			new THREE.Euler( -.35, .5, .12 )],
 			[ electricLayer.position, 	new THREE.Vector3( 0, 0, 30 )],
-			[ processorLayer.position, 	new THREE.Vector3( 0, 0, -30 )]
+			[ processorLayer.position, 	new THREE.Vector3( 0, 0, -40 )],
+			[ hotspotLayer.position, 	new THREE.Vector3( 0, 0, 2 )]
 		])
 	]
 
@@ -132,7 +144,7 @@ scene.add( layers )
 
 
 	// Performs a naive transition, sliding 'a' towards 'b'
-	let slideTo = ( a, b ) => ( b - a ) * 0.08+ a
+	let slideTo = ( a, b ) => ( b - a ) * 0.12 + a
 
 
 	let slideToVec3 = ( b, a ) => {
@@ -168,12 +180,21 @@ scene.add( layers )
 
 		
 		// Set Uniforms			
+		processorLayer.material.materials[4].opacity = slideTo( 
+				processorLayer.material.materials[4].opacity,
+				expandedState )
+
 		electricLayer.material.materials[4].uniforms.uOrigin.value.fromArray( hotspotPos )
+		hotspotLayer.material.uniforms.uOrigin.value.fromArray( hotspotPos )
 
 
 		electricLayer.material.materials[4].uniforms.uRadius.value = slideTo( 
 				electricLayer.material.materials[4].uniforms.uRadius.value,
 				interactionState * EXPANDED_HOTSPOT_SIZE )
+
+		let radius = electricLayer.material.materials[4].uniforms.uRadius.value
+		hotspotLayer.material.uniforms.uRadius.value = math.mix( expandedState, radius, radius * 0.3 );
+			
 
 
 		electricLayer.material.materials[4].uniforms.uOpacity.value = slideTo( 
@@ -181,7 +202,10 @@ scene.add( layers )
 				math.mix( expandedState, 1.0, 0.5 ))
 
 
-		sensingLayer.material.opacity = electricLayer.material.materials[4].uniforms.uOpacity.value
+		sensingLayer.material.materials[4].uniforms.uOpacity.value = slideTo( 
+				sensingLayer.material.materials[4].uniforms.uOpacity.value,
+				math.mix( expandedState, 1.0, 0.5 ))
+
 
 
 	}
@@ -211,12 +235,19 @@ scene.add( layers )
 		let bounds = canvas.getBoundingClientRect()
 
 		let x = evt.clientX - bounds.left,
-			y = bounds.height - ( evt.clientY - bounds.top )
+			y = evt.clientY - bounds.top;
 
-		x = math.clamp( x, 0, bounds.width )
-		y = math.clamp( y, 0, bounds.height )
 
-		hotspotPos = [ x, y ];
+		let screenCoord = [( x / bounds.width ) * 2 - 1, - ( y / bounds.height ) * 2 + 1]
+		let p = projectToUV( camera, screenCoord, electricLayer )
+
+
+
+		hotspotPos = [ 
+			math.map( p.x, -width*0.5, width*0.5, 0, WIDTH ),
+			math.map( p.y, -height*0.5, height*0.5, 0, HEIGHT ),
+		]	
+
 	}
 
 

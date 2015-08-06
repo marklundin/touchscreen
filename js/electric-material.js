@@ -37,6 +37,18 @@ export default ( resolution ) => {
 				}
 
 
+				// float aastep( float threshold, float distance ){
+				// 	#ifdef GL_OES_standard_derivatives
+				// 	    float d  = (distance - 0.5); // distance rebias 0..1 --> -0.5 .. +0.5
+				// 	    float aa = 0.75*length( vec2( dFdx( d ), dFdy( d ))); // anti-alias
+				// 	    return smoothstep( -aa, aa, d );
+				// 	#else
+				// 	    const float w = 0.25; // fallback to smoothstep( 0.25, 0.75, distance ) if texture gradients not available
+				// 	    return smoothstep( threshold-w, threshold+w, distance ); 
+				// 	#endif
+				// }
+
+
 				float line( vec2 p, float thickness ){
 					return aastep( thickness, abs( p.y ));
 				}
@@ -69,7 +81,7 @@ export default ( resolution ) => {
 
 
 					// DEFINE LINE STYLES
-					float lineThickness = 1.;
+					float lineThickness = 2.0;
 					float lineSpacing = 30.0;
 					vec3 lineColor = vec3( 0.1, 0.9, 1.0 );
 					vec3 focusColor = vec3( 1.0, 0.0, 1.0 );
@@ -77,20 +89,21 @@ export default ( resolution ) => {
 
 
 					// DISTORT COORDINATES AT HOTSPOT
-					float distortionFactor = pinch( p, uOrigin, uRadius * 1.5, 1.2, 0.5 );
+					float distortionFactor = pinch( p, uOrigin, uRadius * 1.8, 1.2, 0.5 );
 					vec2 distortion = ( p - uOrigin ) * distortionFactor * 0.9;
 
 
 
 					// CALCULATE LINES				
-					float value = lines( p + distortion , vec2( 0.0, lineSpacing ), lineThickness );
+					float value = lines( p + distortion, vec2( 0.0, lineSpacing ), lineThickness );
+
 
 
 
 
 					col.rgb = mix( lineColor, focusColor, distortionFactor );
-					col.rgb = mix( col.rgb, vec3( 1.0 ), value );
-					col.a = uOpacity;
+					// col.rgb = mix( col.rgb, vec3( 1.0 ), value );
+					col.a = 1.0 - value;//1.0;//1.0 - value + uOpacity;
 
 					
 
@@ -99,6 +112,7 @@ export default ( resolution ) => {
 				}
 
 			`,
+			// blending: THREE.MultiplyBlending,
 			transparent: true,
 			vertexShader: defaultVertexShader
 		})

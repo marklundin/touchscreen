@@ -7,7 +7,7 @@ var PI2 = 2.0 * Math.PI,
     EPS = 10e-6;
 
 
-var math = module.exports = {
+let math = {
 
     //Constants
     PI2 : PI2,
@@ -76,3 +76,5 @@ var math = module.exports = {
     }
 
 }
+
+export default math
