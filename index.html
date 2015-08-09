@@ -2,17 +2,34 @@
 	<head>
 		<title>Wonderbox - prototype</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="./style/main.css">
 	</head>
 	<body>
 		<div class='container' touch-action="none" >
 			<img width='500px' class='mobile-phone' src='./img/nexus-5-mockup.png'></img>
-			<div class='container relative'>	
-				<div class='gl'></div>
+			<div class='container relative'>
+				<div class='gl'>
+					<div id='info'class='overlay'>
+						<span>
+						This little demo shows the basics of how the touchscreen in your phone works.
+
+						Built with some friends at Google as part of their Nat + Lo episode about what’s inside a phone. Check out the video if you want to know more about what’s going on here.
+
+						Made with WebGL and the Web Audio API. <a href='https://github.com/marklundin/wonderbox'>Source on Github.</a>
+						<span>
+					</div>
+					<div id='error' class='overlay'>
+						<h1>Oops</h1>
+						<span>
+						Sorry for the tech trouble. For the best experience, view in the <a href='https://www.google.com/chrome/'>Chrome browser</a> on your phone or laptop.
+						<span>
+					</div>
+				</div>
 				<div class='puck closed' id='toggle'></div>
 			</div>
 		</div>
 		<script src='js/three.js'></script>
-		<script src='js/built.js'></script>
+		<script src='js/index.js'></script>
 	</body>
 </html>

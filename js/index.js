@@ -9,11 +9,21 @@ import facingMaterial from './mesh-facing-material'
 import text from './text'
 import createGeometry from 'three-bmfont-text'
 import Shader from './sdf'
+import detector from './detector'
+import sounds from './sounds'
 
-//window.THREE = THREE
+
+// DETECTOR
+	
+	if ( !detector.webgl ) {
+
+		document.querySelector( '#error' ).style.display = 'inherit';
+
+	}else {
 
 
 // INITIALISE
+
 
 
 	// Constants
@@ -287,7 +297,12 @@ scene.add( layers )
 			    align: 'left',
 			})
 
-			locText.visible = expandedState === 1 && interactionState === 1? true : false
+			locText.visible = 
+				expandedState === 1 && 
+				interactionState === 1 &&
+				dashedLine.position.x > -width*0.5 && dashedLine.position.x < width*0.5 &&
+				dashedLine.position.y > -height*0.5 && dashedLine.position.y < height*0.5
+				? true : false
 
 		}
 
@@ -314,7 +329,12 @@ scene.add( layers )
 				math.mix( expandedState, 1.0, 0.5 ))
 
 
-		dashedLine.material.visible = interactionState === 1 && expandedState === 1 ? true : false;
+		dashedLine.material.visible = 
+			expandedState === 1 && 
+			interactionState === 1 &&
+			dashedLine.position.x > -width*0.5 && dashedLine.position.x < width*0.5 &&
+			dashedLine.position.y > -height*0.5 && dashedLine.position.y < height*0.5
+
 
 	}
 
@@ -375,6 +395,8 @@ scene.add( layers )
 		interactionState = 1
 		updateHotSpotPosition( evt )
 
+		sounds.triggerInteraction()
+
 		document.addEventListener( 'pointermove', onInteractionUpdate )		
 		document.addEventListener( 'pointerup', onInteractionEnd )
 	}
@@ -382,6 +404,8 @@ scene.add( layers )
 
 	let onInteractionEnd = () => {
 		interactionState = 0
+
+		sounds.stopInteraction()
 
 		document.removeEventListener( 'pointermove', onInteractionUpdate )
 		document.removeEventListener( 'pointerup', onInteractionEnd )
@@ -391,3 +415,4 @@ scene.add( layers )
 	document.addEventListener( 'pointerdown', onInteractionStart )
 
 
+}
