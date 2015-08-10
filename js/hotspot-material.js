@@ -52,11 +52,11 @@ export default ( resolution ) => {
 
 
 				// CIRCLE SDF
-				// float value = circle( abs( p - uOrigin ), uRadius );
+				float value = circle( abs( p - uOrigin ), uRadius );
 
-				float retX = aastep( 5.0, abs( p.x - uOrigin.x ));
-				float retY = aastep( 5.0, abs( p.y - uOrigin.y ));
-				float value = min( retX, retY );
+				// float retX = aastep( 5.0, abs( p.x - uOrigin.x ));
+				// float retY = aastep( 5.0, abs( p.y - uOrigin.y ));
+				// float value = min( retX, retY );
 
 				// col.rgb = mix( lineColor, focusColor, distortionFactor );
 				// col.rgb = col;
