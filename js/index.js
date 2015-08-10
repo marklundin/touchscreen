@@ -35,8 +35,9 @@ import isMobile from 'ismobilejs'
 	// let cW = size.width,
 	// 	cH = size.height
 
-	let isLandscape = screen.width > screen.height
-	let chromeHeight = screen.height - window.innerHeight
+	let isLandscape = Math.abs(window.orientation) == 90;//screen.width > screen.height
+	let chromeHeight = screen.availHeight - window.innerHeight
+	// console.log( screen, chromeHeight, isLandscape )
 	let WIDTH  = !isMobile.any ? contBounds.width  : isLandscape ? screen.height : window.innerWidth,
 		HEIGHT = !isMobile.any ? contBounds.height : isLandscape ? window.innerWidth - chromeHeight : window.innerHeight
 
