@@ -5,6 +5,7 @@ html, body{
 	font-size: 16px;
 	line-height: 1.4rem;
 	font-weight: 300;
+	background-color: #F5F5F5
 }
 
 
@@ -82,8 +83,8 @@ a:hover{
 .callout{
 	position: absolute;
 	text-align: right;
-	right: 20px;
-	bottom: 20px;
+	right: 40px;
+	bottom: 40px;
 	opacity: 0.35;
 	font-size: 12px;
 	line-height: 16px;
