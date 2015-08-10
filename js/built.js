@@ -257,13 +257,11 @@ if (!_detector2['default'].webgl) {
 		document.querySelector('#info-button').addEventListener('pointerdown', function (e) {
 			e.stopPropagation();
 			infoOverlay.style.display = 'inherit';
-			infoButton.style.display = 'none';
 		}, true);
 
 		document.querySelector('#close-button').addEventListener('pointerdown', function (e) {
 			e.stopPropagation();
 			infoOverlay.style.display = 'none';
-			infoButton.style.display = 'inherit';
 		}, true);
 
 		// POSITION CAMERA
@@ -442,7 +440,7 @@ if (!_detector2['default'].webgl) {
 				locText.visible = expandedState === 1 && interactionState === 1 && dashedLine.position.x > -width * 0.5 && dashedLine.position.x < width * 0.5 && dashedLine.position.y > -height * 0.5 && dashedLine.position.y < height * 0.5 ? true : false;
 			}
 
-			infoButton.style.display = expandedState === 1.0 ? 'inherit' : 'none';
+			infoButton.style.display = expandedState === 0.0 || infoOverlay.style.display === 'inherit' ? 'none' : 'inherit';
 
 			// set radius of electric layer
 			electricLayer.material.materials[4].uniforms.uRadius.value = slideTo(electricLayer.material.materials[4].uniforms.uRadius.value, interactionState * EXPANDED_HOTSPOT_SIZE);
@@ -1976,7 +1974,7 @@ var _tone2 = _interopRequireDefault(_tone);
 
 var api = undefined;
 
-if (typeof window.AudioContext === 'undefined') {
+if (typeof window.AudioContext !== 'undefined') {
 	(function () {
 		// create synth object
 		//create an effect and connect it to the master output
