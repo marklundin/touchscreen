@@ -122,8 +122,21 @@ import isMobile from 'ismobilejs'
 		new THREE.LineDashedMaterial( { color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent:true } ),
 		THREE.LinePieces );
 
+	let cpuActionLine = new THREE.Line( 
+		new THREE.Geometry(), 
+		new THREE.LineBasicMaterial({ color: 0xffffff }),
+		THREE.LinePieces );
+
+
+	cpuActionLine.geometry.vertices = [
+		new THREE.Vector3( 0, -10, 0 ),
+		new THREE.Vector3( 0, -33, 0 )
+	]
+
+
 	let l = 30
 	while ( l-- > 0 ) dashedLine.geometry.vertices.push( new THREE.Vector3( 0, 0, l ))
+
 
 	l = 40	
 	while ( l-- > 0 ) cpuLine.geometry.vertices.push( new THREE.Vector3( 0, 0, l ))
@@ -216,6 +229,7 @@ import isMobile from 'ismobilejs'
 
 		processorText.position.y = -40;
 		sensingText.position.y = -height * 0.62;
+		sensingText.position.x = 3
 		electricText.position.y = height * 0.5;
 		locText.position.z = layerThickness * 2;
 
@@ -228,6 +242,7 @@ import isMobile from 'ismobilejs'
 	layers.add( hotspotLayer )
 	layers.add( dashedLine )
 	layers.add( cpuLine )
+	processorLayer.add( cpuActionLine )
 
 
 // PROCESSOR
@@ -361,7 +376,7 @@ scene.add( layers )
 
 		// set radius of sensing layer
 		
-		let radius = electricLayer.material.materials[4].uniforms.uRadius.value
+		let radius = electricLayer.material.materials[4].uniforms.uRadius.value + ( Math.sin( t*0.004 ) * 4 * interactionState )
 		hotspotLayer.material.uniforms.uRadius.value = math.mix( expandedState, radius, radius * 0.4 );
 			
 

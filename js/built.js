@@ -284,6 +284,10 @@ if (!_detector2['default'].webgl) {
 
 		var cpuLine = new THREE.Line(new THREE.Geometry(), new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent: true }), THREE.LinePieces);
 
+		var cpuActionLine = new THREE.Line(new THREE.Geometry(), new THREE.LineBasicMaterial({ color: 0xffffff }), THREE.LinePieces);
+
+		cpuActionLine.geometry.vertices = [new THREE.Vector3(0, -10, 0), new THREE.Vector3(0, -33, 0)];
+
 		var l = 30;
 		while (l-- > 0) dashedLine.geometry.vertices.push(new THREE.Vector3(0, 0, l));
 
@@ -360,6 +364,7 @@ if (!_detector2['default'].webgl) {
 
 			processorText.position.y = -40;
 			sensingText.position.y = -height * 0.62;
+			sensingText.position.x = 3;
 			electricText.position.y = height * 0.5;
 			locText.position.z = layerThickness * 2;
 		});
@@ -370,6 +375,7 @@ if (!_detector2['default'].webgl) {
 		layers.add(hotspotLayer);
 		layers.add(dashedLine);
 		layers.add(cpuLine);
+		processorLayer.add(cpuActionLine);
 
 		// PROCESSOR
 
@@ -463,7 +469,7 @@ if (!_detector2['default'].webgl) {
 
 			// set radius of sensing layer
 
-			var radius = electricLayer.material.materials[4].uniforms.uRadius.value;
+			var radius = electricLayer.material.materials[4].uniforms.uRadius.value + Math.sin(t * 0.004) * 4 * interactionState;
 			hotspotLayer.material.uniforms.uRadius.value = _math2['default'].mix(expandedState, radius, radius * 0.4);
 
 			// set opacity of electric layer
