@@ -75,6 +75,7 @@ export default ( resolution ) => {
 					float value = lines( p, vec2( lineSpacing, 0.0 ), lineThickness );
 
 
+					// 
 
 
 					// col.rgb = mix( lineColor, focusColor, distortionFactor );

@@ -48,16 +48,20 @@ export default ( resolution ) => {
 				// COORDS
 				vec2 p = vUv * uResolution;
 				vec4 col = vec4( 0.9, 0.22, 0.64, 1.0 );
+				vec4 reticuleCol = vec4( 0.9, 0.8, 0.2, 1.0 );
 
 
 				// CIRCLE SDF
-				float value = circle( abs( p - uOrigin ), uRadius );
+				// float value = circle( abs( p - uOrigin ), uRadius );
+
+				float retX = aastep( 5.0, abs( p.x - uOrigin.x ));
+				float retY = aastep( 5.0, abs( p.y - uOrigin.y ));
+				float value = min( retX, retY );
 
 				// col.rgb = mix( lineColor, focusColor, distortionFactor );
 				// col.rgb = col;
 				col.a = 1.0 - value;
 				
-
 				gl_FragColor = col;
 
 			}

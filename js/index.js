@@ -31,12 +31,13 @@ import isMobile from 'ismobilejs'
 	let container = document.querySelector( '.gl' ),
 		EXPANDED_HOTSPOT_SIZE = 50;
 
-	let size = isMobile.any ? screen : container.getBoundingClientRect()
+	let contBounds = container.getBoundingClientRect()
 	let cW = size.width,
 		cH = size.height
 
-	let WIDTH = cW > cH ? cH : cW,
-		HEIGHT = cW > cH ? cW : cH
+	let isLandscape = screen.width > screen.height
+	let WIDTH  = !isMobile.any ? contBounds.width  : isLandscape ? window.innerHeight : window.innerWidth,
+		HEIGHT = !isMobile.any ? contBounds.height : isLandscape ? window.innerWidth : window.innerHeight
 
 
 
@@ -330,7 +331,7 @@ scene.add( layers )
 		infoButton.style.display = expandedState === 0.0 ||	
 			infoOverlay.style.display === 'inherit' ? 'none' : 'inherit'
 
-		
+
 
 
 		// set radius of electric layer
