@@ -32,8 +32,8 @@ import isMobile from 'ismobilejs'
 		EXPANDED_HOTSPOT_SIZE = 50;
 
 	let contBounds = container.getBoundingClientRect()
-	let cW = size.width,
-		cH = size.height
+	// let cW = size.width,
+	// 	cH = size.height
 
 	let isLandscape = screen.width > screen.height
 	let WIDTH  = !isMobile.any ? contBounds.width  : isLandscape ? window.innerHeight : window.innerWidth,

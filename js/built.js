@@ -220,8 +220,8 @@ if (!_detector2['default'].webgl) {
 		    EXPANDED_HOTSPOT_SIZE = 50;
 
 		var contBounds = container.getBoundingClientRect();
-		var cW = size.width,
-		    cH = size.height;
+		// let cW = size.width,
+		// 	cH = size.height
 
 		var isLandscape = screen.width > screen.height;
 		var WIDTH = !_ismobilejs2['default'].any ? contBounds.width : isLandscape ? window.innerHeight : window.innerWidth,
