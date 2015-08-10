@@ -311,8 +311,8 @@ scene.add( layers )
 		dashedLine.position.y = math.map( hotspotPos[1], 0, HEIGHT, -height * 0.5, height * 0.5 )
 
 		if( locText ) {
-			locText.position.x = dashedLine.position.x - 5
-			locText.position.y = dashedLine.position.y + ( dashedLine.position.y + 10 > 20 ? -18 : 10 ); 
+			locText.position.x = dashedLine.position.x - 7
+			locText.position.y = dashedLine.position.y + ( dashedLine.position.y + 5 > 20 ? -18 : 5 ); 
 			locText.position.z = 6
 			locText.children[0].geometry.update({
 				text: '('+parseFloat(Math.round(dashedLine.position.x * 100) / 100).toFixed(1)+','+parseFloat(Math.round(dashedLine.position.y * 100) / 100).toFixed(1)+')',
