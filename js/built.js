@@ -431,7 +431,7 @@ if (!_detector2['default'].webgl) {
 
 			if (locText) {
 				locText.position.x = dashedLine.position.x - 7;
-				locText.position.y = dashedLine.position.y + (dashedLine.position.y + 5 > 20 ? -18 : 5);
+				locText.position.y = dashedLine.position.y + (dashedLine.position.y + 5 > 20 ? -20 : 5);
 				locText.position.z = 6;
 				locText.children[0].geometry.update({
 					text: '(' + parseFloat(Math.round(dashedLine.position.x * 100) / 100).toFixed(1) + ',' + parseFloat(Math.round(dashedLine.position.y * 100) / 100).toFixed(1) + ')',
