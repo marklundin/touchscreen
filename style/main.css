@@ -116,6 +116,15 @@ a:hover{
 	display: none;
 }
 
+.rotate-gfx{
+	width: 200px;
+}
+
+#landscape-warning{
+	text-align: center;
+	padding-top: 10%;
+}
+
 @media only screen and (orientation: landscape){
 
 	#landscape-warning{
