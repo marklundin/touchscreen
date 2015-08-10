@@ -352,8 +352,6 @@ scene.add( layers )
 			locText.children[0].material.opacity = expandedState//slideTo( 
 					// locText.children[0].material.opacity,
 					// expandedState )
-	
-			console.log( expandedState )
 
 			sensingText.children[0].material.opacity = locText.children[0].material.opacity
 			electricText.children[0].material.opacity = locText.children[0].material.opacity

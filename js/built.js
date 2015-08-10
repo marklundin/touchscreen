@@ -451,8 +451,6 @@ if (!_detector2['default'].webgl) {
 				// locText.children[0].material.opacity,
 				// expandedState )
 
-				console.log(expandedState);
-
 				sensingText.children[0].material.opacity = locText.children[0].material.opacity;
 				electricText.children[0].material.opacity = locText.children[0].material.opacity;
 			}
