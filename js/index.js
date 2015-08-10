@@ -81,14 +81,12 @@ import isMobile from 'ismobilejs'
 	document.querySelector( '#info-button' ).addEventListener( 'pointerdown', ( e ) => {
 		e.stopPropagation();
 		infoOverlay.style.display = 'inherit'
-		infoButton.style.display = 'none'
 	}, true )
 
 
 	document.querySelector( '#close-button' ).addEventListener( 'pointerdown', ( e ) => {
 		e.stopPropagation();
 		infoOverlay.style.display = 'none'
-		infoButton.style.display = 'inherit'
 	}, true )
 
 
@@ -329,7 +327,10 @@ scene.add( layers )
 
 		}
 
-		infoButton.style.display = expandedState === 1.0 ? 'inherit' : 'none'
+		infoButton.style.display = expandedState === 0.0 ||	
+			infoOverlay.style.display === 'inherit' ? 'none' : 'inherit'
+
+		
 
 
 		// set radius of electric layer

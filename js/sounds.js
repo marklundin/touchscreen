@@ -2,7 +2,7 @@ import Tone from 'tone'
 
 let api;
 
-if( typeof window.AudioContext === 'undefined' ){
+if( typeof window.AudioContext !== 'undefined' ){
 	// create synth object
 	//create an effect and connect it to the master output
 	let tremolo = new Tone.Tremolo().toMaster().start();
