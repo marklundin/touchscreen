@@ -29,7 +29,7 @@ html, body{
 	background-size: contain;
 	position: absolute;
 	left: 50%;
-	bottom: 110px;
+	bottom: 30px;
 	/*margin-top: -37px;*/
 	margin-left: -37px;
 }
@@ -161,6 +161,10 @@ a:hover{
 	.container{
 		width: 406px;
 		height: 751px;
+	}
+
+	.puck{
+		bottom: 110px;
 	}
 
 	.gl{
