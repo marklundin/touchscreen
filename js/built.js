@@ -223,8 +223,9 @@ if (!_detector2['default'].webgl) {
 		// let cW = size.width,
 		// 	cH = size.height
 
-		var isLandscape = screen.width > screen.height;
-		var chromeHeight = screen.height - window.innerHeight;
+		var isLandscape = Math.abs(window.orientation) == 90; //screen.width > screen.height
+		var chromeHeight = screen.availHeight - window.innerHeight;
+		// console.log( screen, chromeHeight, isLandscape )
 		var WIDTH = !_ismobilejs2['default'].any ? contBounds.width : isLandscape ? screen.height : window.innerWidth,
 		    HEIGHT = !_ismobilejs2['default'].any ? contBounds.height : isLandscape ? window.innerWidth - chromeHeight : window.innerHeight;
 
