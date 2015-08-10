@@ -28,7 +28,7 @@ html, body{
 	background-size: contain;
 	position: absolute;
 	left: 50%;
-	bottom: 25px;
+	bottom: 110px;
 	/*margin-top: -37px;*/
 	margin-left: -37px;
 }
@@ -78,6 +78,16 @@ a:hover{
 }
 
 
+
+.callout{
+	position: absolute;
+	text-align: right;
+	right: 20px;
+	bottom: 20px;
+	opacity: 0.35;
+	font-size: 12px;
+	line-height: 16px;
+}
 
 .overlay{
 	width: 100%;
@@ -148,15 +158,15 @@ a:hover{
 	}
 
 	.container{
-		width: 500px;
-		height: 817px;
+		width: 406px;
+		height: 751px;
 	}
 
 	.gl{
-		left: 49px;
+		left:39px;
 		position: absolute;
-		top: 102px;
-		width: 400px;
-		height: 714px
+		top: 82px;
+		width: 326px;
+		height: 581px
 	}
 }
