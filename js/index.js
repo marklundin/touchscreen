@@ -36,7 +36,7 @@ import isMobile from 'ismobilejs'
 	// 	cH = size.height
 
 	let isLandscape = screen.width > screen.height
-	let WIDTH  = !isMobile.any ? contBounds.width  : isLandscape ? window.innerHeight : window.innerWidth,
+	let WIDTH  = !isMobile.any ? contBounds.width  : isLandscape ? screen.height : window.innerWidth,
 		HEIGHT = !isMobile.any ? contBounds.height : isLandscape ? window.innerWidth : window.innerHeight
 
 
