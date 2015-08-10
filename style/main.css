@@ -13,8 +13,8 @@ html, body{
 }
 
 
-#info-toggle{
-	
+#info-button{
+	display: none;
 }
 
 .made-with-friends{
