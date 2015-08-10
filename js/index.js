@@ -11,6 +11,7 @@ import createGeometry from 'three-bmfont-text'
 import Shader from './sdf'
 import detector from './detector'
 import sounds from './sounds'
+import isMobile from 'ismobilejs'
 
 
 // DETECTOR
@@ -30,8 +31,9 @@ import sounds from './sounds'
 	let container = document.querySelector( '.gl' ),
 		EXPANDED_HOTSPOT_SIZE = 50;
 
-	let cW = container.getBoundingClientRect().width,
-		cH = container.getBoundingClientRect().height
+	let size = isMobile.any ? screen : container.getBoundingClientRect().width
+	let cW = size.width,
+		cH = size.height
 
 	let WIDTH = cW > cH ? cH : cW,
 		HEIGHT = cW > cH ? cW : cH

@@ -191,9 +191,13 @@ var _detector2 = _interopRequireDefault(_detector);
 
 var _sounds = require('./sounds');
 
+var _sounds2 = _interopRequireDefault(_sounds);
+
+var _ismobilejs = require('ismobilejs');
+
 // DETECTOR
 
-var _sounds2 = _interopRequireDefault(_sounds);
+var _ismobilejs2 = _interopRequireDefault(_ismobilejs);
 
 if (!_detector2['default'].webgl) {
 
@@ -215,8 +219,9 @@ if (!_detector2['default'].webgl) {
 		var container = document.querySelector('.gl'),
 		    EXPANDED_HOTSPOT_SIZE = 50;
 
-		var cW = container.getBoundingClientRect().width,
-		    cH = container.getBoundingClientRect().height;
+		var size = _ismobilejs2['default'].any ? screen : container.getBoundingClientRect().width;
+		var cW = size.width,
+		    cH = size.height;
 
 		var WIDTH = cW > cH ? cH : cW,
 		    HEIGHT = cW > cH ? cW : cH;
@@ -540,7 +545,7 @@ if (!_detector2['default'].webgl) {
 	})();
 }
 
-},{"./detector":1,"./electric-material":2,"./hotspot-material":3,"./math":5,"./mesh-facing-material":6,"./pointer-events":7,"./project-to-uv":8,"./sdf":9,"./sensing-material":10,"./sounds":11,"./text":12,"babel-runtime/core-js/map":13,"babel-runtime/helpers/interop-require-default":16,"three-bmfont-text":84}],5:[function(require,module,exports){
+},{"./detector":1,"./electric-material":2,"./hotspot-material":3,"./math":5,"./mesh-facing-material":6,"./pointer-events":7,"./project-to-uv":8,"./sdf":9,"./sensing-material":10,"./sounds":11,"./text":12,"babel-runtime/core-js/map":13,"babel-runtime/helpers/interop-require-default":16,"ismobilejs":68,"three-bmfont-text":85}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1919,7 +1924,7 @@ module.exports = function (opt) {
   }, opt);
 };
 
-},{"xtend":97}],10:[function(require,module,exports){
+},{"xtend":98}],10:[function(require,module,exports){
 // import THREE from 'three'
 "use strict";
 
@@ -2047,7 +2052,7 @@ if (typeof window.AudioContext === 'undefined') {
 exports['default'] = api;
 module.exports = exports['default'];
 
-},{"babel-runtime/helpers/interop-require-default":16,"tone":96}],12:[function(require,module,exports){
+},{"babel-runtime/helpers/interop-require-default":16,"tone":97}],12:[function(require,module,exports){
 'use strict';
 
 var loadFont = require('load-bmfont');
@@ -2063,7 +2068,7 @@ module.exports = function (opt, cb) {
   });
 };
 
-},{"load-bmfont":68}],13:[function(require,module,exports){
+},{"load-bmfont":69}],13:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/map"), __esModule: true };
 },{"core-js/library/fn/map":17}],14:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/object/create"), __esModule: true };
@@ -2783,6 +2788,134 @@ require('./es6.array.iterator');
 var Iterators = require('./$.iterators');
 Iterators.NodeList = Iterators.HTMLCollection = Iterators.Array;
 },{"./$.iterators":43,"./es6.array.iterator":62}],68:[function(require,module,exports){
+/**
+ * isMobile.js v0.3.9
+ *
+ * A simple library to detect Apple phones and tablets,
+ * Android phones and tablets, other mobile devices (like blackberry, mini-opera and windows phone),
+ * and any kind of seven inch device, via user agent sniffing.
+ *
+ * @author: Kai Mallea (kmallea@gmail.com)
+ *
+ * @license: http://creativecommons.org/publicdomain/zero/1.0/
+ */
+(function (global) {
+
+    var apple_phone         = /iPhone/i,
+        apple_ipod          = /iPod/i,
+        apple_tablet        = /iPad/i,
+        android_phone       = /(?=.*\bAndroid\b)(?=.*\bMobile\b)/i, // Match 'Android' AND 'Mobile'
+        android_tablet      = /Android/i,
+        amazon_phone        = /(?=.*\bAndroid\b)(?=.*\bSD4930UR\b)/i,
+        amazon_tablet       = /(?=.*\bAndroid\b)(?=.*\b(?:KFOT|KFTT|KFJWI|KFJWA|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|KFARWI|KFASWI|KFSAWI|KFSAWA)\b)/i,
+        windows_phone       = /IEMobile/i,
+        windows_tablet      = /(?=.*\bWindows\b)(?=.*\bARM\b)/i, // Match 'Windows' AND 'ARM'
+        other_blackberry    = /BlackBerry/i,
+        other_blackberry_10 = /BB10/i,
+        other_opera         = /Opera Mini/i,
+        other_chrome        = /(CriOS|Chrome)(?=.*\bMobile\b)/i,
+        other_firefox       = /(?=.*\bFirefox\b)(?=.*\bMobile\b)/i, // Match 'Firefox' AND 'Mobile'
+        seven_inch = new RegExp(
+            '(?:' +         // Non-capturing group
+
+            'Nexus 7' +     // Nexus 7
+
+            '|' +           // OR
+
+            'BNTV250' +     // B&N Nook Tablet 7 inch
+
+            '|' +           // OR
+
+            'Kindle Fire' + // Kindle Fire
+
+            '|' +           // OR
+
+            'Silk' +        // Kindle Fire, Silk Accelerated
+
+            '|' +           // OR
+
+            'GT-P1000' +    // Galaxy Tab 7 inch
+
+            ')',            // End non-capturing group
+
+            'i');           // Case-insensitive matching
+
+    var match = function(regex, userAgent) {
+        return regex.test(userAgent);
+    };
+
+    var IsMobileClass = function(userAgent) {
+        var ua = userAgent || navigator.userAgent;
+        // Facebook mobile app's integrated browser adds a bunch of strings that
+        // match everything. Strip it out if it exists.
+        var tmp = ua.split('[FBAN');
+        if (typeof tmp[1] !== 'undefined') {
+            ua = tmp[0];
+        }
+
+        this.apple = {
+            phone:  match(apple_phone, ua),
+            ipod:   match(apple_ipod, ua),
+            tablet: !match(apple_phone, ua) && match(apple_tablet, ua),
+            device: match(apple_phone, ua) || match(apple_ipod, ua) || match(apple_tablet, ua)
+        };
+        this.amazon = {
+            phone:  match(amazon_phone, ua),
+            tablet: !match(amazon_phone, ua) && match(amazon_tablet, ua),
+            device: match(amazon_phone, ua) || match(amazon_tablet, ua)
+        };
+        this.android = {
+            phone:  match(amazon_phone, ua) || match(android_phone, ua),
+            tablet: !match(amazon_phone, ua) && !match(android_phone, ua) && (match(amazon_tablet, ua) || match(android_tablet, ua)),
+            device: match(amazon_phone, ua) || match(amazon_tablet, ua) || match(android_phone, ua) || match(android_tablet, ua)
+        };
+        this.windows = {
+            phone:  match(windows_phone, ua),
+            tablet: match(windows_tablet, ua),
+            device: match(windows_phone, ua) || match(windows_tablet, ua)
+        };
+        this.other = {
+            blackberry:   match(other_blackberry, ua),
+            blackberry10: match(other_blackberry_10, ua),
+            opera:        match(other_opera, ua),
+            firefox:      match(other_firefox, ua),
+            chrome:       match(other_chrome, ua),
+            device:       match(other_blackberry, ua) || match(other_blackberry_10, ua) || match(other_opera, ua) || match(other_firefox, ua) || match(other_chrome, ua)
+        };
+        this.seven_inch = match(seven_inch, ua);
+        this.any = this.apple.device || this.android.device || this.windows.device || this.other.device || this.seven_inch;
+        // excludes 'other' devices and ipods, targeting touchscreen phones
+        this.phone = this.apple.phone || this.android.phone || this.windows.phone;
+        // excludes 7 inch devices, classifying as phone or tablet is left to the user
+        this.tablet = this.apple.tablet || this.android.tablet || this.windows.tablet;
+
+        if (typeof window === 'undefined') {
+            return this;
+        }
+    };
+
+    var instantiate = function() {
+        var IM = new IsMobileClass();
+        IM.Class = IsMobileClass;
+        return IM;
+    };
+
+    if (typeof module != 'undefined' && module.exports && typeof window === 'undefined') {
+        //node
+        module.exports = IsMobileClass;
+    } else if (typeof module != 'undefined' && module.exports && typeof window !== 'undefined') {
+        //browserify
+        module.exports = instantiate();
+    } else if (typeof define === 'function' && define.amd) {
+        //AMD
+        define('isMobile', [], global.isMobile = instantiate());
+    } else {
+        global.isMobile = instantiate();
+    }
+
+})(this);
+
+},{}],69:[function(require,module,exports){
 (function (Buffer){
 var xhr = require('xhr')
 var noop = function(){}
@@ -2882,7 +3015,7 @@ function getBinaryOpts(opt) {
   }, opt)
 }
 }).call(this,require("buffer").Buffer)
-},{"./lib/is-binary":69,"buffer":98,"parse-bmfont-ascii":71,"parse-bmfont-binary":72,"parse-bmfont-xml":73,"xhr":76,"xtend":83}],69:[function(require,module,exports){
+},{"./lib/is-binary":70,"buffer":99,"parse-bmfont-ascii":72,"parse-bmfont-binary":73,"parse-bmfont-xml":74,"xhr":77,"xtend":84}],70:[function(require,module,exports){
 (function (Buffer){
 var equal = require('buffer-equal')
 var HEADER = new Buffer([66, 77, 70, 3])
@@ -2893,7 +3026,7 @@ module.exports = function(buf) {
   return buf.length > 4 && equal(buf.slice(0, 4), HEADER)
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":98,"buffer-equal":70}],70:[function(require,module,exports){
+},{"buffer":99,"buffer-equal":71}],71:[function(require,module,exports){
 var Buffer = require('buffer').Buffer; // for use with browserify
 
 module.exports = function (a, b) {
@@ -2909,7 +3042,7 @@ module.exports = function (a, b) {
     return true;
 };
 
-},{"buffer":98}],71:[function(require,module,exports){
+},{"buffer":99}],72:[function(require,module,exports){
 module.exports = function parseBMFontAscii(data) {
   if (!data)
     throw new Error('no data provided')
@@ -3018,7 +3151,7 @@ function parseIntList(data) {
     return parseInt(val, 10)
   })
 }
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 var HEADER = [66, 77, 70]
 
 module.exports = function readBMFontBinary(buf) {
@@ -3179,7 +3312,7 @@ function readNameNT(buf, offset) {
 function readStringNT(buf, offset) {
   return readNameNT(buf, offset).toString('utf8')
 }
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 var parseAttributes = require('./parse-attribs')
 var parseFromString = require('xml-parse-from-string')
 
@@ -3265,7 +3398,7 @@ function getAttribList(element) {
 function mapName(nodeName) {
   return NAME_MAP[nodeName.toLowerCase()] || nodeName
 }
-},{"./parse-attribs":74,"xml-parse-from-string":75}],74:[function(require,module,exports){
+},{"./parse-attribs":75,"xml-parse-from-string":76}],75:[function(require,module,exports){
 //Some versions of GlyphDesigner have a typo
 //that causes some bugs with parsing. 
 //Need to confirm with recent version of the software
@@ -3294,7 +3427,7 @@ function parseIntList(data) {
     return parseInt(val, 10)
   })
 }
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = (function xmlparser() {
   //common browsers
   if (typeof window.DOMParser !== 'undefined') {
@@ -3322,7 +3455,7 @@ module.exports = (function xmlparser() {
     return div
   }
 })()
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 "use strict";
 var window = require("global/window")
 var once = require("once")
@@ -3511,7 +3644,7 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":77,"once":78,"parse-headers":82}],77:[function(require,module,exports){
+},{"global/window":78,"once":79,"parse-headers":83}],78:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window;
@@ -3524,7 +3657,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -3545,7 +3678,7 @@ function once (fn) {
   }
 }
 
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -3593,7 +3726,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":80}],80:[function(require,module,exports){
+},{"is-function":81}],81:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -3610,7 +3743,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -3626,7 +3759,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -3658,7 +3791,7 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":79,"trim":81}],83:[function(require,module,exports){
+},{"for-each":80,"trim":82}],84:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -3677,7 +3810,7 @@ function extend() {
     return target
 }
 
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 var createLayout = require('layout-bmfont-text')
 var inherits = require('inherits')
 var createIndices = require('quad-indices')
@@ -3873,7 +4006,7 @@ function getQuadPositions(glyphs, layout) {
   })
   return positions
 }
-},{"./lib/utils":85,"inherits":86,"layout-bmfont-text":87,"quad-indices":91}],85:[function(require,module,exports){
+},{"./lib/utils":86,"inherits":87,"layout-bmfont-text":88,"quad-indices":92}],86:[function(require,module,exports){
 var itemSize = 2
 var box = { min: [0, 0], max: [0, 0] }
 
@@ -3912,7 +4045,7 @@ module.exports.computeSphere = function(positions, output) {
   output.radius = length/2
 }
 
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -3937,7 +4070,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 var wordWrap = require('word-wrapper')
 var xtend = require('xtend')
 var findChar = require('indexof-property')('id')
@@ -4227,13 +4360,13 @@ function getAlignType(align) {
     return ALIGN_RIGHT
   return ALIGN_LEFT
 }
-},{"as-number":88,"indexof-property":89,"word-wrapper":90,"xtend":95}],88:[function(require,module,exports){
+},{"as-number":89,"indexof-property":90,"word-wrapper":91,"xtend":96}],89:[function(require,module,exports){
 module.exports = function numtype(num, def) {
 	return typeof num === 'number'
 		? num 
 		: (typeof def === 'number' ? def : 0)
 }
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 module.exports = function compile(property) {
 	if (!property || typeof property !== 'string')
 		throw new Error('must specify property for indexof search')
@@ -4246,7 +4379,7 @@ module.exports = function compile(property) {
 		'return -1'
 	].join('\n'))
 }
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 var newline = /\n/
 var newlineChar = '\n'
 var whitespace = /\s/
@@ -4374,7 +4507,7 @@ function monospace(text, start, end, width) {
         end: start+glyphs
     }
 }
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 var dtype = require('dtype')
 var anArray = require('an-array')
 var isBuffer = require('is-buffer')
@@ -4417,7 +4550,7 @@ module.exports = function createQuadElements(array, opt) {
     }
     return indices
 }
-},{"an-array":92,"dtype":93,"is-buffer":94}],92:[function(require,module,exports){
+},{"an-array":93,"dtype":94,"is-buffer":95}],93:[function(require,module,exports){
 var str = Object.prototype.toString
 
 module.exports = anArray
@@ -4430,7 +4563,7 @@ function anArray(arr) {
   )
 }
 
-},{}],93:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 module.exports = function(dtype) {
   switch (dtype) {
     case 'int8':
@@ -4456,7 +4589,7 @@ module.exports = function(dtype) {
   }
 }
 
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -4475,9 +4608,9 @@ module.exports = function (obj) {
   )
 }
 
-},{}],95:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"dup":83}],96:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
+arguments[4][84][0].apply(exports,arguments)
+},{"dup":84}],97:[function(require,module,exports){
 (function (root) {
 	"use strict";
 	var Tone;
@@ -19173,9 +19306,9 @@ arguments[4][83][0].apply(exports,arguments)
 		root.Tone = Tone;
 	}
 } (this));
-},{}],97:[function(require,module,exports){
-arguments[4][83][0].apply(exports,arguments)
-},{"dup":83}],98:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
+arguments[4][84][0].apply(exports,arguments)
+},{"dup":84}],99:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -20633,7 +20766,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":99,"ieee754":100,"is-array":101}],99:[function(require,module,exports){
+},{"base64-js":100,"ieee754":101,"is-array":102}],100:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -20759,7 +20892,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],100:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -20845,7 +20978,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],101:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 
 /**
  * isArray
