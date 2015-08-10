@@ -31,7 +31,7 @@ import isMobile from 'ismobilejs'
 	let container = document.querySelector( '.gl' ),
 		EXPANDED_HOTSPOT_SIZE = 50;
 
-	let size = isMobile.any ? screen : container.getBoundingClientRect().width
+	let size = isMobile.any ? screen : container.getBoundingClientRect()
 	let cW = size.width,
 		cH = size.height
 

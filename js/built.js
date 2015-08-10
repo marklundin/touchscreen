@@ -219,7 +219,7 @@ if (!_detector2['default'].webgl) {
 		var container = document.querySelector('.gl'),
 		    EXPANDED_HOTSPOT_SIZE = 50;
 
-		var size = _ismobilejs2['default'].any ? screen : container.getBoundingClientRect().width;
+		var size = _ismobilejs2['default'].any ? screen : container.getBoundingClientRect();
 		var cW = size.width,
 		    cH = size.height;
 
