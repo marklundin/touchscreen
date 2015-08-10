@@ -62,6 +62,7 @@ import sounds from './sounds'
 
 	let toggle = document.querySelector( '#toggle' )
 	let infoOverlay = document.querySelector( '#info' )
+	let infoButton = document.querySelector( '#info-button' )
 
 	toggle.addEventListener( 'pointerdown', ( e ) => {
 		e.stopPropagation();
@@ -319,6 +320,8 @@ scene.add( layers )
 				? true : false
 
 		}
+
+		infoButton.style.display = expandedState === 1.0 ? 'inherit' : 'none'
 
 
 		// set radius of electric layer

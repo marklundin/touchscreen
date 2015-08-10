@@ -235,6 +235,7 @@ if (!_detector2['default'].webgl) {
 
 		var toggle = document.querySelector('#toggle');
 		var infoOverlay = document.querySelector('#info');
+		var infoButton = document.querySelector('#info-button');
 
 		toggle.addEventListener('pointerdown', function (e) {
 			e.stopPropagation();
@@ -427,6 +428,8 @@ if (!_detector2['default'].webgl) {
 
 				locText.visible = expandedState === 1 && interactionState === 1 && dashedLine.position.x > -width * 0.5 && dashedLine.position.x < width * 0.5 && dashedLine.position.y > -height * 0.5 && dashedLine.position.y < height * 0.5 ? true : false;
 			}
+
+			infoButton.style.display = expandedState === 1.0 ? 'inherit' : 'none';
 
 			// set radius of electric layer
 			electricLayer.material.materials[4].uniforms.uRadius.value = slideTo(electricLayer.material.materials[4].uniforms.uRadius.value, interactionState * EXPANDED_HOTSPOT_SIZE);
