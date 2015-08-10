@@ -88,6 +88,7 @@ a:hover{
 	opacity: 0.35;
 	font-size: 12px;
 	line-height: 16px;
+	display: none;
 }
 
 .overlay{
@@ -152,6 +153,10 @@ a:hover{
 }
 
 @media only screen and (min-device-width: 1300px){
+
+	.callout{
+		display: inherit;
+	}
 
 	.mobile-phone{
 		display: block;
