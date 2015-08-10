@@ -75,12 +75,14 @@ import sounds from './sounds'
 	document.querySelector( '#info-button' ).addEventListener( 'pointerdown', ( e ) => {
 		e.stopPropagation();
 		infoOverlay.style.display = 'inherit'
+		infoButton.style.display = 'none'
 	}, true )
 
 
 	document.querySelector( '#close-button' ).addEventListener( 'pointerdown', ( e ) => {
 		e.stopPropagation();
 		infoOverlay.style.display = 'none'
+		infoButton.style.display = 'inherit'
 	}, true )
 
 
@@ -304,7 +306,7 @@ scene.add( layers )
 
 		if( locText ) {
 			locText.position.x = dashedLine.position.x - 5
-			locText.position.y = dashedLine.position.y + ( dashedLine.position.y > 20 ? -15 : 0 ); 
+			locText.position.y = dashedLine.position.y + ( dashedLine.position.y + 10 > 20 ? -18 : 10 ); 
 			locText.position.z = 6
 			locText.children[0].geometry.update({
 				text: '('+parseFloat(Math.round(dashedLine.position.x * 100) / 100).toFixed(1)+','+parseFloat(Math.round(dashedLine.position.y * 100) / 100).toFixed(1)+')',
@@ -385,35 +387,58 @@ scene.add( layers )
 	// Prevents default OS page scroll events
 	document.body.addEventListener('touchmove', (e) => e.preventDefault() , false); 
 
-
-
-	let updateHotSpotPosition = ( evt ) => {
+	let getScreenCoords = ( x, y ) => {
 
 		let bounds = canvas.getBoundingClientRect()
 
-		let x = evt.clientX - bounds.left,
-			y = evt.clientY - bounds.top;
+		x -= bounds.left,
+		y -= bounds.top;
 
 
 		let screenCoord = [( x / bounds.width ) * 2 - 1, - ( y / bounds.height ) * 2 + 1]
 		let p = projectToUV( camera, screenCoord, electricLayer )
 
-
-
-		hotspotPos = [ 
+		return [
 			math.map( p.x, -width*0.5, width*0.5, 0, WIDTH ),
 			math.map( p.y, -height*0.5, height*0.5, 0, HEIGHT ),
 		]	
 
 	}
 
+	let updateHotSpotPosition = ( evt ) => {
+		hotspotPos = getScreenCoords( evt.clientX, evt.clientY )
+	}
 
-	let onInteractionUpdate = updateHotSpotPosition
+
+	let onInteractionUpdate = ( evt ) => {
+
+		let bounds = canvas.getBoundingClientRect()
+		let p = getScreenCoords( evt.clientX, evt.clientY )
+
+		let lastInteractionState = interactionState;
+		interactionState = 	p[0] > 0 && p[0] < bounds.width &&
+							p[1] > 0 && p[1] < bounds.height ? 1.0 : 0.0
+
+		if( interactionState !== lastInteractionState ){
+		 	if( interactionState === 0.0 ) sounds.stopInteraction()
+		 	else sounds.triggerInteraction()
+		}	
+
+		updateHotSpotPosition( evt )
+
+	}
 
 
 	let onInteractionStart = ( evt ) => {
 
-		if( !(infoOverlay.style.display == 'inherit' )){
+		let bounds = canvas.getBoundingClientRect()
+		let pos = getScreenCoords( evt.clientX, evt.clientY )	
+		
+
+		if( !(infoOverlay.style.display == 'inherit') &&
+			pos[0] > 0 && pos[0] < bounds.width &&
+			pos[1] > 0 && pos[1] < bounds.height ){			
+
 			interactionState = 1
 			updateHotSpotPosition( evt )
 
@@ -422,6 +447,8 @@ scene.add( layers )
 
 			document.addEventListener( 'pointermove', onInteractionUpdate )		
 			document.addEventListener( 'pointerup', onInteractionEnd )
+			document.addEventListener( 'pointerleave', onInteractionEnd )
+
 		}
 	}
 
@@ -433,6 +460,8 @@ scene.add( layers )
 
 		document.removeEventListener( 'pointermove', onInteractionUpdate )
 		document.removeEventListener( 'pointerup', onInteractionEnd )
+		document.removeEventListener( 'pointerleave', onInteractionEnd )
+		
 	}
 
 
