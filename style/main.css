@@ -1,7 +1,10 @@
 html, body{
 	margin: 0;
 	padding: 0;
-	font-family: 'Roboto', sans-serif;	
+	font-family: 'Roboto', sans-serif;
+	font-size: 20px;
+	line-height: 1.6rem;
+	font-weight: 300;
 }
 
 
@@ -12,6 +15,11 @@ html, body{
 
 #info-toggle{
 	
+}
+
+.made-with-friends{
+	padding-top: 30px;
+	display: block;
 }
 
 .puck{
@@ -35,6 +43,31 @@ a{
 	text-decoration: none;
 }
 
+a:hover{
+	color: #77e4ff;
+	text-decoration: underline;
+}
+
+.button{
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	margin: 20px;	
+	right: 0;
+	top: 0;
+	background-size: cover;
+}
+
+.info-button{
+	/*background: red;*/
+	background-image: url( ../img/info.png );
+}
+
+.close-button{
+	/*background: green;*/
+	background-image: url( ../img/close.png );
+}
 
 .puck.expanded{
 	background-image: url( ../img/collapsed-puck.png );
@@ -43,6 +76,8 @@ a{
 .relative {
   position: relative;
 }
+
+
 
 .overlay{
 	width: 100%;
@@ -53,6 +88,7 @@ a{
 	display:none;
 	position: absolute;
 	padding: 30px;
+	padding-top: 20%;
   	box-sizing: border-box;
 }
 

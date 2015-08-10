@@ -53,7 +53,7 @@ module.exports = function(opt) {
         "vec4 texColor = texture2D(map, vUv);",
         "float dst = texColor.a;", 
         "float afwidth = smooth * SQRT2 / (2.0 * gl_FragCoord.w);",
-        "float alpha = aastep( 0.5, dst );//smoothstep(0.5 - afwidth, 0.5 + afwidth, dst);",
+        "float alpha = aastep( 0.45, dst );//smoothstep(0.5 - afwidth, 0.5 + afwidth, dst);",
 
         "gl_FragColor = vec4(color, opacity * alpha);",
         THREE.ShaderChunk["alphatest_fragment"],

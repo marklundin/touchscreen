@@ -61,10 +61,27 @@ import sounds from './sounds'
 	
 
 	let toggle = document.querySelector( '#toggle' )
+	let infoOverlay = document.querySelector( '#info' )
+
 	toggle.addEventListener( 'pointerdown', ( e ) => {
 		e.stopPropagation();
-		expandedState = expandedState === 1.0 ? 0.0 : 1.0
+		expandedState = expandedState === 1.0 ? 0.0 : 1.0;
+		if( expandedState === 1.0 ) sounds.openSound() 
+		else sounds.closeSound()
 	}, true )
+
+
+	document.querySelector( '#info-button' ).addEventListener( 'pointerdown', ( e ) => {
+		e.stopPropagation();
+		infoOverlay.style.display = 'inherit'
+	}, true )
+
+
+	document.querySelector( '#close-button' ).addEventListener( 'pointerdown', ( e ) => {
+		e.stopPropagation();
+		infoOverlay.style.display = 'none'
+	}, true )
+
 
 
 
@@ -79,9 +96,6 @@ import sounds from './sounds'
 	// let fov = camera.fov * Math.PI/ 180
 	let height = 2 * Math.tan( camera.fov * Math.PI / 360 ) * camera.position.z,
 		width  = height * camera.aspect
-
-
-	console.log( width, height );
 
 
 // LAYERS
@@ -143,7 +157,7 @@ import sounds from './sounds'
 
 		//scale it down so it fits in our 3D units
 		var textAnchor = new THREE.Object3D()
-		textAnchor.scale.multiplyScalar(0.15)
+		textAnchor.scale.multiplyScalar(0.12)
 		textAnchor.add(mesh)
 		textAnchor.font = font
 
@@ -157,7 +171,7 @@ import sounds from './sounds'
 		electricText,
 		locText
 
-	text( {font:'fonts/Lato-Regular-32.fnt', image:'fonts/lato.png'}, function( font, texture ){
+	text( {font:'fonts/DejaVu-sdf.fnt', image:'fonts/DejaVu-sdf.png'}, function( font, texture ){
 
 		var maxAni = renderer.getMaxAnisotropy()
 
@@ -176,20 +190,18 @@ import sounds from './sounds'
 			transparent: true,
 			color: 'rgb(230, 230, 230)'
 		}))
-		
-
-		
 
 
 		processorLayer.add( processorText = textMesh( 'Processor', textMaterial, font ))
 		sensingLayer.add( sensingText = textMesh( 'Sensing layer', textMaterial, font ))
 		electricLayer.add( electricText = textMesh( 'Electric layer', textMaterial, font ))
-		sensingLayer.add( locText = textMesh( '(0, 0)', textMaterial, font ))
+		electricLayer.add( locText = textMesh( '(0, 0)', textMaterial, font ))
 
-		processorText.position.y = -47;
-		sensingText.position.y = -height * 0.7;
+		processorText.position.y = -40;
+		sensingText.position.y = -height * 0.62;
 		electricText.position.y = height * 0.5;
 		locText.position.z = layerThickness * 2;
+
 
 	})
 
@@ -266,6 +278,7 @@ scene.add( layers )
 
 		// Update the button to reflect the current state
 		toggle.className = 'puck ' + ( expandedState === 1.0  ? 'expanded' : 'collapsed' )
+		toggle.style.visibility = infoOverlay.style.display === 'inherit' ? 'hidden' : 'visible'
 
 
 		// Update elements of the expand animation
@@ -289,10 +302,11 @@ scene.add( layers )
 		dashedLine.position.y = math.map( hotspotPos[1], 0, HEIGHT, -height * 0.5, height * 0.5 )
 
 		if( locText ) {
-			locText.position.x = dashedLine.position.x
-			locText.position.y = dashedLine.position.y
+			locText.position.x = dashedLine.position.x - 5
+			locText.position.y = dashedLine.position.y + ( dashedLine.position.y > 20 ? -15 : 0 ); 
+			locText.position.z = 6
 			locText.children[0].geometry.update({
-				text: '('+parseFloat(Math.round(dashedLine.position.x * 100) / 100).toFixed(1)+', '+parseFloat(Math.round(dashedLine.position.y * 100) / 100).toFixed(1)+')',
+				text: '('+parseFloat(Math.round(dashedLine.position.x * 100) / 100).toFixed(1)+','+parseFloat(Math.round(dashedLine.position.y * 100) / 100).toFixed(1)+')',
 			    font: locText.font,
 			    align: 'left',
 			})
@@ -309,8 +323,8 @@ scene.add( layers )
 
 		// set radius of electric layer
 		electricLayer.material.materials[4].uniforms.uRadius.value = slideTo( 
-				electricLayer.material.materials[4].uniforms.uRadius.value,
-				interactionState * EXPANDED_HOTSPOT_SIZE )
+			electricLayer.material.materials[4].uniforms.uRadius.value,
+			interactionState * EXPANDED_HOTSPOT_SIZE )
 
 		// set radius of sensing layer
 		let radius = electricLayer.material.materials[4].uniforms.uRadius.value
@@ -327,6 +341,21 @@ scene.add( layers )
 		sensingLayer.material.materials[4].uniforms.uOpacity.value = slideTo( 
 				sensingLayer.material.materials[4].uniforms.uOpacity.value,
 				math.mix( expandedState, 1.0, 0.5 ))
+
+
+		// set opacity of text
+		if( locText ){
+
+			locText.children[0].material.opacity = expandedState//slideTo( 
+					// locText.children[0].material.opacity,
+					// expandedState )
+	
+			console.log( expandedState )
+
+			sensingText.children[0].material.opacity = locText.children[0].material.opacity
+			electricText.children[0].material.opacity = locText.children[0].material.opacity
+
+		}
 
 
 		dashedLine.material.visible = 
@@ -356,16 +385,6 @@ scene.add( layers )
 	document.body.addEventListener('touchmove', (e) => e.preventDefault() , false); 
 
 
-	document.addEventListener('mousemove', (e) => {
-
-		if( interactionState === 0 ){
-
-
-		}
-
-	}, false); 
-
-
 
 	let updateHotSpotPosition = ( evt ) => {
 
@@ -391,14 +410,18 @@ scene.add( layers )
 	let onInteractionUpdate = updateHotSpotPosition
 
 
-	let onInteractionStart = ( evt ) => {	
-		interactionState = 1
-		updateHotSpotPosition( evt )
+	let onInteractionStart = ( evt ) => {
 
-		sounds.triggerInteraction()
+		if( !(infoOverlay.style.display == 'inherit' )){
+			interactionState = 1
+			updateHotSpotPosition( evt )
 
-		document.addEventListener( 'pointermove', onInteractionUpdate )		
-		document.addEventListener( 'pointerup', onInteractionEnd )
+			sounds.triggerInteraction()
+			sounds.tapSound()
+
+			document.addEventListener( 'pointermove', onInteractionUpdate )		
+			document.addEventListener( 'pointerup', onInteractionEnd )
+		}
 	}
 
 

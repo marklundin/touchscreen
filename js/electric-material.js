@@ -78,16 +78,20 @@ export default ( resolution ) => {
 
 
 					// DISTORT COORDINATES AT HOTSPOT
-					float distortionFactor = pinch( p, uOrigin, uRadius * 1.8, 1.2, 0.5 );
+					float distortionFactor = pinch( p, uOrigin, uRadius * 2.3, 1.2, 0.8 );
 					vec2 distortion = ( p - uOrigin ) * distortionFactor * 0.9;
 
 
 
 					// CALCULATE LINES				
-					float value = lines( p + distortion, vec2( 0.0, lineSpacing ), lineThickness );
+					float value = lines( p + distortion, vec2( 0.0, lineSpacing ), mix( lineThickness, lineThickness * 3.8, distortionFactor ));
 
 
+					// float pulse = pulseSdf( );
 
+
+					// Union 
+					// value = min( value, pulse )
 
 
 					col.rgb = mix( lineColor, focusColor, distortionFactor );
