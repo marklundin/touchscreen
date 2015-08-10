@@ -203,8 +203,8 @@ if (!_detector2['default'].webgl) {
 
 		// RENDER
 
-		var render = function render() {
-			update();
+		var render = function render(t) {
+			update(t);
 			renderer.render(scene, camera);
 			requestAnimationFrame(render);
 		};
@@ -213,9 +213,13 @@ if (!_detector2['default'].webgl) {
 
 		// Constants
 		var container = document.querySelector('.gl'),
-		    EXPANDED_HOTSPOT_SIZE = 50,
-		    WIDTH = container.getBoundingClientRect().width,
-		    HEIGHT = container.getBoundingClientRect().height;
+		    EXPANDED_HOTSPOT_SIZE = 50;
+
+		var cW = container.getBoundingClientRect().width,
+		    cH = container.getBoundingClientRect().height;
+
+		var WIDTH = cW > cH ? cH : cW,
+		    HEIGHT = cW > cH ? cW : cH;
 
 		// Params
 		var expandedState = 0,
@@ -400,7 +404,7 @@ if (!_detector2['default'].webgl) {
 			return lerpDict.get(item.constructor)(item, value);
 		};
 
-		var update = function update() {
+		var update = function update(t) {
 
 			// Update the button to reflect the current state
 			toggle.className = 'puck ' + (expandedState === 1.0 ? 'expanded' : 'collapsed');
@@ -439,6 +443,7 @@ if (!_detector2['default'].webgl) {
 			electricLayer.material.materials[4].uniforms.uRadius.value = slideTo(electricLayer.material.materials[4].uniforms.uRadius.value, interactionState * EXPANDED_HOTSPOT_SIZE);
 
 			// set radius of sensing layer
+
 			var radius = electricLayer.material.materials[4].uniforms.uRadius.value;
 			hotspotLayer.material.uniforms.uRadius.value = _math2['default'].mix(expandedState, radius, radius * 0.4);
 
@@ -1952,68 +1957,95 @@ var defaultVertexShader = "\n\tvarying vec2 vUv;\n\tvoid main() {\n\t\tvUv = uv;
 module.exports = exports["default"];
 
 },{"./mesh-facing-material":6,"babel-runtime/helpers/interop-require-default":16}],11:[function(require,module,exports){
-"use strict";
+'use strict';
 
-var _interopRequireDefault = require("babel-runtime/helpers/interop-require-default")["default"];
+var _interopRequireDefault = require('babel-runtime/helpers/interop-require-default')['default'];
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
 var _tone = require('tone');
 
-// create synth object
-//create an effect and connect it to the master output
-
 var _tone2 = _interopRequireDefault(_tone);
 
-var tremolo = new _tone2["default"].Tremolo().toMaster().start();
-tremolo.frequency.value = 2;
-tremolo.depth.value = 0.7;
-//create a synth and connect it to the effect
-var synth = new _tone2["default"].SimpleSynth({ volume: -10 }).connect(tremolo);
-synth.oscillator.type = "triangle";
-synth.envelope.attack = 0.9;
-synth.envelope.decay = 1.0;
-synth.envelope.sustain = 0.4;
-synth.envelope.release = 1.5;
+var api = undefined;
 
-var _openSound = new _tone2["default"].Player({
-	"url": "./audio/open-puck.mp3",
-	"loop": false
-}).toMaster();
+if (typeof window.AudioContext === 'undefined') {
+	(function () {
+		// create synth object
+		//create an effect and connect it to the master output
+		var tremolo = new _tone2['default'].Tremolo().toMaster().start();
+		tremolo.frequency.value = 2;
+		tremolo.depth.value = 0.7;
+		//create a synth and connect it to the effect
+		var synth = new _tone2['default'].SimpleSynth({ volume: -10 }).connect(tremolo);
+		synth.oscillator.type = "triangle";
+		synth.envelope.attack = 0.9;
+		synth.envelope.decay = 1.0;
+		synth.envelope.sustain = 0.4;
+		synth.envelope.release = 1.5;
 
-var _closeSound = new _tone2["default"].Player({
-	"url": "./audio/close-puck.mp3",
-	"loop": false
-}).toMaster();
+		var _openSound = new _tone2['default'].Player({
+			"url": "./audio/open-puck.mp3",
+			"loop": false
+		}).toMaster();
 
-var _tapSound = new _tone2["default"].Player({
-	"url": "./audio/tap.mp3",
-	"loop": false
-}).toMaster();
+		var _closeSound = new _tone2['default'].Player({
+			"url": "./audio/close-puck.mp3",
+			"loop": false
+		}).toMaster();
 
-exports["default"] = {
+		var _tapSound = new _tone2['default'].Player({
+			"url": "./audio/tap.mp3",
+			"loop": false
+		}).toMaster();
 
-	triggerInteraction: function triggerInteraction() {
-		return synth.triggerAttack("G4");
-	},
-	stopInteraction: function stopInteraction() {
-		return synth.triggerRelease();
-	},
+		api = {
 
-	openSound: function openSound() {
-		return _openSound.start();
-	},
-	closeSound: function closeSound() {
-		return _closeSound.start();
-	},
-	tapSound: function tapSound() {
-		return _tapSound.start();
-	}
+			triggerInteraction: function triggerInteraction() {
+				return synth.triggerAttack("G4");
+			},
+			stopInteraction: function stopInteraction() {
+				return synth.triggerRelease();
+			},
 
-};
-module.exports = exports["default"];
+			openSound: function openSound() {
+				return _openSound.start();
+			},
+			closeSound: function closeSound() {
+				return _closeSound.start();
+			},
+			tapSound: function tapSound() {
+				return _tapSound.start();
+			}
+
+		};
+	})();
+} else {
+
+	api = {
+		triggerInteraction: function triggerInteraction() {
+			return null;
+		},
+		stopInteraction: function stopInteraction() {
+			return null;
+		},
+
+		openSound: function openSound() {
+			return null;
+		},
+		closeSound: function closeSound() {
+			return null;
+		},
+		tapSound: function tapSound() {
+			return null;
+		}
+	};
+}
+
+exports['default'] = api;
+module.exports = exports['default'];
 
 },{"babel-runtime/helpers/interop-require-default":16,"tone":96}],12:[function(require,module,exports){
 'use strict';

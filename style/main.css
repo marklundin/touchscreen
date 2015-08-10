@@ -112,6 +112,24 @@ a:hover{
 	height: 100%;
 }
 
+#landscape-warning{
+	display: none;
+}
+
+@media only screen and (orientation: landscape){
+
+	#landscape-warning{
+		display: inherit;
+	}
+
+	.puck{
+		display: none;
+	}
+
+	canvas{
+		display: none;
+	}
+}
 
 @media only screen and (min-device-width: 1300px){
 

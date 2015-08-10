@@ -28,9 +28,13 @@ import sounds from './sounds'
 
 	// Constants
 	let container = document.querySelector( '.gl' ),
-		EXPANDED_HOTSPOT_SIZE = 50,
-		WIDTH = container.getBoundingClientRect().width,
-		HEIGHT = container.getBoundingClientRect().height
+		EXPANDED_HOTSPOT_SIZE = 50;
+
+	let cW = container.getBoundingClientRect().width,
+		cH = container.getBoundingClientRect().height
+
+	let WIDTH = cW > cH ? cH : cW,
+		HEIGHT = cW > cH ? cW : cH
 
 
 
@@ -276,7 +280,7 @@ scene.add( layers )
 	let transition = ( item, value ) => lerpDict.get( item.constructor )( item, value )
 
 
-	let update = () => {
+	let update = ( t ) => {
 
 
 		// Update the button to reflect the current state
@@ -332,6 +336,7 @@ scene.add( layers )
 			interactionState * EXPANDED_HOTSPOT_SIZE )
 
 		// set radius of sensing layer
+		
 		let radius = electricLayer.material.materials[4].uniforms.uRadius.value
 		hotspotLayer.material.uniforms.uRadius.value = math.mix( expandedState, radius, radius * 0.4 );
 			
@@ -372,8 +377,8 @@ scene.add( layers )
 
 // RENDER
 
-	function render(){
-		update()
+	function render(t){
+		update(t)
 		renderer.render( scene, camera )
 		requestAnimationFrame( render )	
 
