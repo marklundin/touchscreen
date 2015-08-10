@@ -282,8 +282,13 @@ if (!_detector2['default'].webgl) {
 
 		var dashedLine = new THREE.Line(new THREE.Geometry(), new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent: true }), THREE.LinePieces);
 
+		var cpuLine = new THREE.Line(new THREE.Geometry(), new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent: true }), THREE.LinePieces);
+
 		var l = 30;
 		while (l-- > 0) dashedLine.geometry.vertices.push(new THREE.Vector3(0, 0, l));
+
+		l = 40;
+		while (l-- > 0) cpuLine.geometry.vertices.push(new THREE.Vector3(0, 0, l));
 
 		var hotspotLayer = new THREE.Mesh(new THREE.PlaneGeometry(width, height), (0, _hotspotMaterial2['default'])(new THREE.Vector2(WIDTH, HEIGHT)));
 
@@ -364,6 +369,7 @@ if (!_detector2['default'].webgl) {
 		layers.add(processorLayer);
 		layers.add(hotspotLayer);
 		layers.add(dashedLine);
+		layers.add(cpuLine);
 
 		// PROCESSOR
 
@@ -409,6 +415,7 @@ if (!_detector2['default'].webgl) {
 			return lerpDict.get(item.constructor)(item, value);
 		};
 
+		var dir = new THREE.Vector3();
 		var update = function update(t) {
 
 			// Update the button to reflect the current state
@@ -428,6 +435,13 @@ if (!_detector2['default'].webgl) {
 			// Position dashed line
 			dashedLine.position.x = _math2['default'].map(hotspotPos[0], 0, WIDTH, -width * 0.5, width * 0.5);
 			dashedLine.position.y = _math2['default'].map(hotspotPos[1], 0, HEIGHT, -height * 0.5, height * 0.5);
+
+			// Position CPU line
+			var l = 40;
+			dir.set(0, 0, -40).sub(dashedLine.position); //.multiplyScalar( 1/30 );
+			while (l-- > 0) cpuLine.geometry.vertices[l].copy(dir).multiplyScalar(l / -40);
+			cpuLine.geometry.verticesNeedUpdate = true;
+			cpuLine.position.z = -40;
 
 			if (locText) {
 				locText.position.x = dashedLine.position.x - 7;
@@ -469,7 +483,7 @@ if (!_detector2['default'].webgl) {
 				electricText.children[0].material.opacity = locText.children[0].material.opacity;
 			}
 
-			dashedLine.material.visible = expandedState === 1 && interactionState === 1 && dashedLine.position.x > -width * 0.5 && dashedLine.position.x < width * 0.5 && dashedLine.position.y > -height * 0.5 && dashedLine.position.y < height * 0.5;
+			cpuLine.material.visible = dashedLine.material.visible = expandedState === 1 && interactionState === 1 && dashedLine.position.x > -width * 0.5 && dashedLine.position.x < width * 0.5 && dashedLine.position.y > -height * 0.5 && dashedLine.position.y < height * 0.5;
 		};
 
 		render();
