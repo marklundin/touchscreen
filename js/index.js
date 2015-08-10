@@ -117,8 +117,16 @@ import isMobile from 'ismobilejs'
 		new THREE.LineDashedMaterial( { color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent:true } ),
 		THREE.LinePieces );
 
+	let cpuLine = new THREE.Line( 
+		new THREE.Geometry(), 
+		new THREE.LineDashedMaterial( { color: 0xffffff, dashSize: 2, gapSize: 2.0, transparent:true } ),
+		THREE.LinePieces );
+
 	let l = 30
 	while ( l-- > 0 ) dashedLine.geometry.vertices.push( new THREE.Vector3( 0, 0, l ))
+
+	l = 40	
+	while ( l-- > 0 ) cpuLine.geometry.vertices.push( new THREE.Vector3( 0, 0, l ))
 
 
 
@@ -219,6 +227,7 @@ import isMobile from 'ismobilejs'
 	layers.add( processorLayer )
 	layers.add( hotspotLayer )
 	layers.add( dashedLine )
+	layers.add( cpuLine )
 
 
 // PROCESSOR
@@ -281,8 +290,9 @@ scene.add( layers )
 	
 	let transition = ( item, value ) => lerpDict.get( item.constructor )( item, value )
 
-
+	let dir = new THREE.Vector3()
 	let update = ( t ) => {
+
 
 
 		// Update the button to reflect the current state
@@ -297,8 +307,8 @@ scene.add( layers )
 		
 		// Set opacity of processor			
 		processorLayer.material.materials[4].opacity = slideTo( 
-				processorLayer.material.materials[4].opacity,
-				expandedState )
+			processorLayer.material.materials[4].opacity,
+			expandedState )
 
 
 		// Set position of hotspots
@@ -309,6 +319,15 @@ scene.add( layers )
 		// Position dashed line
 		dashedLine.position.x = math.map( hotspotPos[0], 0, WIDTH, -width*0.5, width*0.5 )
 		dashedLine.position.y = math.map( hotspotPos[1], 0, HEIGHT, -height * 0.5, height * 0.5 )
+
+
+		// Position CPU line
+		let l = 40
+		dir.set( 0, 0, -40 ).sub( dashedLine.position )//.multiplyScalar( 1/30 );
+		while ( l-- > 0 ) cpuLine.geometry.vertices[l].copy( dir ).multiplyScalar( l/-40 );
+		cpuLine.geometry.verticesNeedUpdate = true
+		cpuLine.position.z = -40
+
 
 		if( locText ) {
 			locText.position.x = dashedLine.position.x - 7
@@ -371,7 +390,7 @@ scene.add( layers )
 		}
 
 
-		dashedLine.material.visible = 
+		cpuLine.material.visible = dashedLine.material.visible = 
 			expandedState === 1 && 
 			interactionState === 1 &&
 			dashedLine.position.x > -width*0.5 && dashedLine.position.x < width*0.5 &&
