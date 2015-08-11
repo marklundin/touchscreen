@@ -19,16 +19,19 @@ if( typeof window.AudioContext !== 'undefined' ){
 
 	let openSound = new Tone.Player({
 		"url" : "./audio/open-puck.mp3",
+		retrigger: true,
 		"loop" : false
 	}).toMaster();
 
 	let closeSound = new Tone.Player({
 		"url" : "./audio/close-puck.mp3",
+		retrigger: true,
 		"loop" : false
 	}).toMaster();
 
 	let tapSound = new Tone.Player({
 		"url" : "./audio/tap.mp3",
+		retrigger: true,
 		"loop" : false
 	}).toMaster();
 

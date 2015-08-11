@@ -2014,16 +2014,19 @@ if (typeof window.AudioContext !== 'undefined') {
 
 		var _openSound = new _tone2['default'].Player({
 			"url": "./audio/open-puck.mp3",
+			retrigger: true,
 			"loop": false
 		}).toMaster();
 
 		var _closeSound = new _tone2['default'].Player({
 			"url": "./audio/close-puck.mp3",
+			retrigger: true,
 			"loop": false
 		}).toMaster();
 
 		var _tapSound = new _tone2['default'].Player({
 			"url": "./audio/tap.mp3",
+			retrigger: true,
 			"loop": false
 		}).toMaster();
 
