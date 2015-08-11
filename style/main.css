@@ -91,6 +91,13 @@ a:hover{
 	display: none;
 }
 
+#main{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
 .overlay{
 	width: 100%;
 	height: 100%;
