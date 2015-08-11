@@ -48,6 +48,13 @@ export default ( resolution ) => {
 				}
 
 
+				float aarect( vec2 dim, vec2 p ){
+					return 1.0 - max(
+						aastep( dim.y*0.5 - 2.0, abs( p.y - dim.y *0.5)),
+						aastep( dim.x*0.5 - 2.0, abs( p.x - dim.x *0.5)));
+				}
+
+
 				void main(){
 
 
@@ -76,11 +83,12 @@ export default ( resolution ) => {
 
 
 					// 
+					float boundingMask = aarect( uResolution, p );
 
 
 					// col.rgb = mix( lineColor, focusColor, distortionFactor );
 					col.rgb = mix( lineColor, vec3( 1.0 ), value );
-					col.a = uOpacity;
+					col.a = uOpacity * boundingMask;
 
 					
 

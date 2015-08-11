@@ -60,6 +60,13 @@ export default ( resolution ) => {
 				}
 
 
+				float aarect( vec2 dim, vec2 p ){
+					return 1.0 - max(
+						aastep( dim.y*0.5 - 2.0, abs( p.y - dim.y *0.5)),
+						aastep( dim.x*0.5 - 2.0, abs( p.x - dim.x *0.5)));
+				}
+
+
 				void main(){
 
 
@@ -86,8 +93,10 @@ export default ( resolution ) => {
 					// CALCULATE LINES				
 					float value = lines( p + distortion, vec2( 0.0, lineSpacing ), mix( lineThickness, lineThickness * 3.8, distortionFactor ));
 
+					float boundingMask = aarect( uResolution, p );
 
-					// float pulse = pulseSdf( );
+
+					
 
 
 					// Union 
@@ -96,7 +105,7 @@ export default ( resolution ) => {
 
 					col.rgb = mix( lineColor, focusColor, distortionFactor );
 					col.rgb = mix( col.rgb, vec3( 1.0 ), value );
-					col.a = 1.0 - ( value * uOpacity );//1.0;//1.0 - value + uOpacity;
+					col.a = ( 1.0 - ( value * uOpacity )) * boundingMask;//1.0;//1.0 - value + uOpacity;
 
 					
 

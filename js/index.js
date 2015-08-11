@@ -145,17 +145,17 @@ import isMobile from 'ismobilejs'
 
 
 	let hotspotLayer = new THREE.Mesh( 
-		new THREE.PlaneGeometry( width, height ),
+		new THREE.PlaneGeometry( width+2, height+2 ),
 		hotspotMaterial( new THREE.Vector2( WIDTH, HEIGHT )))
 
 	
 	let electricLayer = new THREE.Mesh( 
-		new THREE.BoxGeometry( width, height, layerThickness ),
+		new THREE.BoxGeometry( width+2, height+2, layerThickness ),
 		electricMaterial( new THREE.Vector2( WIDTH, HEIGHT )))
 
 
 	let sensingLayer = new THREE.Mesh( 
-		new THREE.BoxGeometry( width, height, layerThickness ),
+		new THREE.BoxGeometry( width+2, height+2, layerThickness ),
 		sensingMaterial( new THREE.Vector2( WIDTH, HEIGHT )))
 
 
