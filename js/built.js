@@ -363,8 +363,8 @@ if (!_detector2['default'].webgl) {
 			electricLayer.add(electricText = textMesh('Electric layer', textMaterial, font));
 			electricLayer.add(locText = textMesh('(0, 0)', textMaterial, font));
 
-			processorText.position.y = -40;
-			sensingText.position.y = -height * 0.62;
+			processorText.position.y = -42;
+			sensingText.position.y = -height * 0.64;
 			sensingText.position.x = 3;
 			electricText.position.y = height * 0.5;
 			locText.position.z = layerThickness * 2;
@@ -393,7 +393,7 @@ if (!_detector2['default'].webgl) {
 		new _Map([[camera.position, new THREE.Vector3(0, 0, 100)], [layers.rotation, new THREE.Euler(0, 0, 0)], [electricLayer.position, new THREE.Vector3(0, 0, 1)], [processorLayer.position, new THREE.Vector3(0, 0, -10)], [hotspotLayer.position, new THREE.Vector3(0, 0, 2)]]),
 
 		// Properties and values in the expanded states
-		new _Map([[camera.position, new THREE.Vector3(0, 0, 200)], [layers.rotation, new THREE.Euler(-.3, .4, .12)], [electricLayer.position, new THREE.Vector3(0, 0, 30)], [processorLayer.position, new THREE.Vector3(0, 0, -40)], [hotspotLayer.position, new THREE.Vector3(0, 0, 1)]])];
+		new _Map([[camera.position, new THREE.Vector3(4, -6, 200)], [layers.rotation, new THREE.Euler(-.3, .4, .12)], [electricLayer.position, new THREE.Vector3(0, 0, 30)], [processorLayer.position, new THREE.Vector3(0, 0, -40)], [hotspotLayer.position, new THREE.Vector3(0, 0, 1)]])];
 
 		// TRANSITION
 
