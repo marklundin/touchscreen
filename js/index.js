@@ -228,8 +228,8 @@ import isMobile from 'ismobilejs'
 		electricLayer.add( electricText = textMesh( 'Electric layer', textMaterial, font ))
 		electricLayer.add( locText = textMesh( '(0, 0)', textMaterial, font ))
 
-		processorText.position.y = -40;
-		sensingText.position.y = -height * 0.62;
+		processorText.position.y = -42;
+		sensingText.position.y = -height * 0.64;
 		sensingText.position.x = 3
 		electricText.position.y = height * 0.5;
 		locText.position.z = layerThickness * 2;
@@ -271,7 +271,7 @@ scene.add( layers )
 
 		// Properties and values in the expanded states
 		new Map([
-			[ camera.position, 			new THREE.Vector3( 0, 0, 200 )],
+			[ camera.position, 			new THREE.Vector3( 4, -6, 200 )],
 			[ layers.rotation, 			new THREE.Euler( -.3, .4, .12 )],
 			[ electricLayer.position, 	new THREE.Vector3( 0, 0, 30 )],
 			[ processorLayer.position, 	new THREE.Vector3( 0, 0, -40 )],
